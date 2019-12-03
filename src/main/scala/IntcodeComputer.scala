@@ -37,6 +37,47 @@ class IntcodeComputer(val program: String) {
     machineTape.mkString(",")
   }
 
+  def run(noun: Int, verb: Int): String = {
+    val machineTape = program.split(",").map(s => s.toInt)
+    // Dynamically set inputs to program.
+    machineTape(1) = noun
+    machineTape(2) = verb
+
+    var i = 0
+    while (i < machineTape.length) {
+      val opcode = machineTape(i)
+      if (opcode == 99) {
+        i = machineTape.length + 1
+      } else {
+        val lIndex = machineTape(i + 1)
+        val rIndex = machineTape(i + 2)
+        val resIndex = machineTape(i + 3)
+        val result = evalOpcode(machineTape, lIndex, rIndex, opcode)
+        if (result == Int.MinValue) {
+          Console.err.println("UNRECOGNISED OPCODE.")
+          return "ERROR"
+        } else {
+          machineTape(resIndex) = result
+        }
+      }
+      i += 4
+    }
+    machineTape(0).toString
+  }
+
+  def findInputs(outputVal: String, lowerLimit: Int, upperLimit: Int): (Int, Int) = {
+    for (i <- lowerLimit to upperLimit) {
+      for (j <- lowerLimit to upperLimit) {
+        val result = run(i, j)
+        if (result.equals(outputVal)) {
+          // Return tuple of the form (noun, verb)
+          return (i, j)
+        }
+      }
+    }
+    (Int.MinValue, Int.MinValue)
+  }
+
   override def toString: String = program
 }
 
@@ -46,8 +87,14 @@ object IntcodeComputer {
       val pgmStr = Source.fromFile(args(0)).getLines.mkString
       println(s"pgmStr: $pgmStr")
       val computer = new IntcodeComputer(pgmStr)
+      println("Part 1 Output")
       val result = computer.run()
       println(result)
+      println("Part 2 Output")
+      val (noun, verb) = computer.findInputs("19690720", 0, 99)
+      println(s"noun: $noun")
+      println(s"verb: $verb")
+      println(s"100 * $noun + $verb = ${100 * noun + verb}")
     } else {
       Console.err.println("Please enter filename.")
     }
