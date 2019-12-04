@@ -48,7 +48,6 @@ class CrossedWires {
     val wire2Horizontal = wire2Start.y == wire2End.y
 
     if (wire1Horizontal == wire2Horizontal) {
-      println("Parallel wires, no intersection.")
       // No intersection, return null.
       null
     } else {
@@ -93,11 +92,9 @@ class CrossedWires {
           }
         }
         if (intersectionExists) {
-          println(s"Intersection point: $intersection")
           intersection
         } else {
           // Point does not line on both wires, return null.
-          println(s"Point $intersection not on both wires")
           null
         }
       } else {
@@ -141,11 +138,9 @@ class CrossedWires {
           }
         }
         if (intersectionExists) {
-          println(s"Intersection point: $intersection")
           intersection
         } else {
           // Point does not line on both wires, return null.
-          println(s"Point $intersection not on both wires")
           null
         }
       }
@@ -158,13 +153,10 @@ class CrossedWires {
     while (i < wire1Points.length - 1) {
       val wire1Start = wire1Points(i)
       val wire1End = wire1Points(i + 1)
-      println("BEGIN WIRE CHECK")
-      println(s"Wire 1: (${wire1Start.x}, ${wire1Start.y}) -> (${wire1End.x}, ${wire1End.y})")
       var j = 0
       while (j < wire2Points.length - 1) {
         val wire2Start = wire2Points(j)
         val wire2End = wire2Points(j + 1)
-        println(s"Wire 2: (${wire2Start.x}, ${wire2Start.y}) -> (${wire2End.x}, ${wire2End.y})")
         val intersectionPoint = findIntersection(
           wire1Start,
           wire1End,
@@ -177,7 +169,6 @@ class CrossedWires {
         j += 1
       }
       i += 1
-      println("END WIRE CHECK")
     }
     intersectionPoints.toList
   }
