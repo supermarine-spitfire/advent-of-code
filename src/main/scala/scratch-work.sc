@@ -35,8 +35,8 @@ import scala.collection.mutable.ListBuffer
 case class Point(x: Int, y: Int)
 class CrossedWires {
   def manhattanDistance(startPoint: Point, endPoint: Point): Int = {
-    val dx = math.abs(endPoint.x) - math.abs(startPoint.x)
-    val dy = math.abs(endPoint.y) - math.abs(startPoint.y)
+    val dx = math.abs(math.abs(endPoint.x) - math.abs(startPoint.x))
+    val dy = math.abs(math.abs(endPoint.y) - math.abs(startPoint.y))
     dx + dy
   }
 
@@ -186,6 +186,56 @@ class CrossedWires {
     }
   }
 
+  private def isCollinear(startPoint: Point, endPoint: Point, testPoint: Point): Boolean = {
+    if (endPoint.x - startPoint.x > 0) {
+      if (testPoint.x <= endPoint.x && testPoint.x >= startPoint.x) {
+        if (testPoint.y != startPoint.y){
+          false
+        }
+        else {
+          true
+        }
+      } else {
+        false
+      }
+    } else if (endPoint.x - startPoint.x < 0) {
+      if (testPoint.x <= startPoint.x && testPoint.x >= endPoint.x) {
+        if (testPoint.y != startPoint.y){
+          false
+        }
+        else {
+          true
+        }
+      } else {
+        false
+      }
+    } else if (endPoint.y - startPoint.y > 0) {
+      if (testPoint.y <= endPoint.y && testPoint.y >= startPoint.y) {
+        if (testPoint.x != startPoint.x){
+          false
+        }
+        else {
+          true
+        }
+      } else {
+        false
+      }
+    } else if (endPoint.y - startPoint.y < 0) {
+      if (testPoint.y <= startPoint.y && testPoint.y >= endPoint.y) {
+        if (testPoint.x != startPoint.x){
+          false
+        }
+        else {
+          true
+        }
+      } else {
+        false
+      }
+    } else {
+      false
+    }
+  }
+
   def getIntersections(wire1Points: Seq[Point], wire2Points: Seq[Point]): Seq[Point] = {
     val intersectionPoints = ListBuffer[Point]()
     var i = 0
@@ -215,6 +265,32 @@ class CrossedWires {
     }
     intersectionPoints.toList
   }
+
+  def numSteps(wirePoints: Seq[Point], intersection: Point): Int = {
+    println(s"intersection: $intersection")
+    var sum = 0
+    var i = 0
+    while (i < wirePoints.length - 1) {
+      val startPoint = wirePoints(i)
+      var endPoint = wirePoints(i + 1)
+      if (isCollinear(startPoint, endPoint, intersection)) {
+        println("Encountered intersection point.")
+        endPoint = intersection
+        val distance = manhattanDistance(startPoint, endPoint)
+        println(s"distance: $distance")
+        sum += distance
+        println(s"sum: $sum")
+        return sum
+      } else {
+        val distance = manhattanDistance(startPoint, endPoint)
+        println(s"distance: $distance")
+        sum += distance
+      }
+      i += 1
+    }
+    println(s"sum: $sum")
+    sum
+  }
 }
 def testCrossedWires(wire1Str: String, wire2Str: String) = {
   val cw = new CrossedWires()
@@ -222,19 +298,26 @@ def testCrossedWires(wire1Str: String, wire2Str: String) = {
   val wire2List = wire2Str.split(",")
   val wire1Points = cw.getPoints(wire1List)
   val wire2Points = cw.getPoints(wire2List)
-  println(s"wire1Points: $wire1Points")
-  println(s"wire2Points: $wire2Points")
+//  println(s"wire1Points: $wire1Points")
+//  println(s"wire2Points: $wire2Points")
   val intersections = cw.getIntersections(wire1Points, wire2Points)
-  println(s"intersections: $intersections")
+//  println(s"intersections: $intersections")
   var minDistance = Int.MaxValue
+  var minNumSteps = Int.MaxValue
   for (intersection <- intersections) {
     val distance = cw.manhattanDistance(intersection)
+    val numSteps = cw.numSteps(wire1Points, intersection) + cw.numSteps(wire2Points, intersection)
     if (distance < minDistance) {
       minDistance = distance
     }
-    println(s"Distance of $intersection: $distance")
+    if (numSteps < minNumSteps) {
+      minNumSteps = numSteps
+    }
+    println(s"Distance of $intersection from origin: $distance")
+    println(s"Number of steps to $intersection: $numSteps")
   }
   println(s"Smallest distance: $minDistance")
+  println(s"Smallest number of steps: $minNumSteps")
 }
 
 var wire1Str = "R8,U5,L5,D3"
