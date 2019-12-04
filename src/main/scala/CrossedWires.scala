@@ -184,17 +184,34 @@ class CrossedWires {
 }
 
 object CrossedWires {
+  def testCrossedWires(wire1Str: String, wire2Str: String) = {
+    val cw = new CrossedWires()
+    val wire1List = wire1Str.split(",")
+    val wire2List = wire2Str.split(",")
+    val wire1Points = cw.getPoints(wire1List)
+    val wire2Points = cw.getPoints(wire2List)
+    println(s"wire1Points: $wire1Points")
+    println(s"wire2Points: $wire2Points")
+    val intersections = cw.getIntersections(wire1Points, wire2Points)
+    println(s"intersections: $intersections")
+    var minDistance = Int.MaxValue
+    for (intersection <- intersections) {
+      val distance = cw.manhattanDistance(intersection)
+      if (distance < minDistance) {
+        minDistance = distance
+      }
+      println(s"Distance of $intersection: $distance")
+    }
+    println(s"Smallest distance: $minDistance")
+  }
+
   def main(args: Array[String]): Unit = {
     if (args.length > 0) {
       val wires = Source.fromFile(args(0)).getLines.toArray
-      val wire1List = wires(0).split(",")
-      val wire2List = wires(1).split(",")
-      val cw = new CrossedWires()
+      val wire1 = wires(0)
+      val wire2 = wires(1)
 
-      val wire1Points = cw.getPoints(wire1List)
-      val wire2Points = cw.getPoints(wire2List)
-      val intersections = cw.getIntersections(wire1Points, wire2Points)
-      println(s"intersections: $intersections")
+      testCrossedWires(wire1, wire2)
     } else {
       Console.err.println("Please enter filename.")
     }
