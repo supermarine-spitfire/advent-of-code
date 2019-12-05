@@ -10,41 +10,94 @@ class SecureContainer(val numDigits: Int) {
   /*
    * Checks if a number satisfies the following conditions:
    * 1. It has the same number of digits as numDigits.
-   * 2. A minimum of two contiguous digits are identical.
+   * 2. Exactly two contiguous digits are identical.
    * 3. From left to right, the number's digits are monotonically increasing.
    */
   def checkNumber(m: Int): Boolean = {
-    var hasDuplicateDigits = false
     if (m.toString.length != numDigits) {
       // Fails condition 1.
-      Console.out.println(s"$m fails condition 1.")
       return false
     }
+
+    var previousDigit = m % math.pow(10, numDigits).toInt /
+                        math.pow(10, numDigits - 1).toInt
+    val flag = Int.MaxValue // Denotes a non-duplicate digit.
+    val numOccurrences = collection.mutable.HashMap[Int, Int](
+      0 -> 0,
+      1 -> 0,
+      2 -> 0,
+      3 -> 0,
+      4 -> 0,
+      5 -> 0,
+      6 -> 0,
+      7 -> 0,
+      8 -> 0,
+      9 -> 0
+    )
+
     for (n <- numDigits until 1 by -1) {
       val (left, right) = extractDigits(m, n)
+
       if (left == right) {
-        // Passes condition 2.
-        hasDuplicateDigits = true
+        if (n == numDigits) {
+          // At the beginning of the number.
+          numOccurrences(previousDigit) = 2
+        } else if (n == 2) {
+          // At the end of the number.
+          if (previousDigit == flag) {
+            // Encountered two identical digits for the first time.
+            numOccurrences(left) = 2
+          }
+          else if (numOccurrences(previousDigit) == 0) {
+            // Encountered two identical digits.
+            numOccurrences(previousDigit) = 2
+          } else {
+            // Encountered three or more identical digits.
+            numOccurrences(previousDigit) += 1
+          }
+        } else if (right == previousDigit) {
+          // In the middle of the number.
+          // Encountered three or more identical digits.
+          numOccurrences(previousDigit) += 1
+        } else {
+          // In the middle of the number.
+          // Encountered two identical digits.
+          previousDigit = left
+          numOccurrences(previousDigit) = 2
+        }
+      } else {
+        // Ran into a different digit.
+        previousDigit = flag
       }
 
       if (left > right) {
         // Fails condition 3.
-        Console.out.println(s"$m fails condition 3.")
         return false
       }
     }
-    hasDuplicateDigits
+
+    // Check if condition 2 is satisfied.
+    numOccurrences.valuesIterator.contains(2)
   }
 }
 
 object SecureContainer {
   def main(args: Array[String]): Unit = {
-    checkPassword(111111) // Valid
     checkPassword(122345) // Valid
-    checkPassword(111123) // Valid
-    checkPassword(135679) // Valid
+    checkPassword(112233) // Valid
+    checkPassword(111122) // Valid
+    checkPassword(123444) // Invalid
+    checkPassword(111111) // Invalid
+    checkPassword(111123) // Invalid
     checkPassword(223450) // Invalid
     checkPassword(123789) // Invalid
+
+    // All valid
+    checkPassword(778888)
+    checkPassword(677888)
+    checkPassword(567789)
+    checkPassword(456778)
+    checkPassword(345677)
 
     val input = "156218-652527"
     val range = input.split("-")
@@ -62,6 +115,7 @@ object SecureContainer {
     } else {
       println(s"$password is invalid.")
     }
+    println()
   }
 
   def findPasswords(lowerLimit: Int, upperLimit: Int) = {
