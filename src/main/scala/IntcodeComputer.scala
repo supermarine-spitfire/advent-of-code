@@ -43,17 +43,11 @@ class IntcodeComputer() {
         param1Mode = instruction % 1000 / 100   // Hundreds digit.
         param2Mode = instruction % 10000 / 1000 // Thousands digit.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
-        println(s"param1Mode: $param1Mode")
-        println(s"param2Mode: $param2Mode")
-        println(s"param3Mode: $param3Mode")
         instructionStr.substring(3).toInt
       case 5 =>
         param1Mode = instruction % 1000 / 100     // Hundreds digit.
         param2Mode = instruction % 10000 / 1000   // Thousands digit.
         param3Mode = instruction % 100000 / 10000 // Ten-thousands digit.
-        println(s"param1Mode: $param1Mode")
-        println(s"param2Mode: $param2Mode")
-        println(s"param3Mode: $param3Mode")
         instructionStr.substring(4).toInt
     }
   }
