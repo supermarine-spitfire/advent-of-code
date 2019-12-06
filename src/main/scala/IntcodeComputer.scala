@@ -77,6 +77,7 @@ class IntcodeComputer() {
         val address = machineTape(i + 1)
         val input = StdIn.readLine("Enter integer: ").toInt
         machineTape(address) = input
+        println(s"Program tape modified to: ${machineTape.mkString(",")}")
         i += 2
       } else if (opcode == 4) {
         // Print output.
