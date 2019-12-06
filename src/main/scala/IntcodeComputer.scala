@@ -2,11 +2,11 @@ import scala.io.Source
 import scala.io.StdIn
 
 class IntcodeComputer() {
-  private var param1Mode = -1;
-  private var param2Mode = -1;
-  private var param3Mode = -1;
+  private var param1Mode = -1
+  private var param2Mode = -1
+  private var param3Mode = -1
 
-  private var program = "";
+  private var program = ""
 
   private def evalOpcode(tape: Array[Int], lIndex: Int, rIndex: Int, opcode: Int): Int = {
     val lVal = if (param1Mode == 0) tape(lIndex) else lIndex
@@ -156,7 +156,7 @@ object IntcodeComputer {
     runProgram(pgm)
   }
 
-  def runProgram(program: String) = {
+  def runProgram(program: String): Unit = {
     println(s"Program tape: $program")
     val computer = new IntcodeComputer()
     computer.loadProgram(program)
