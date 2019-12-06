@@ -19,11 +19,25 @@ class IntcodeComputer() {
     result
   }
 
-  private def parseOpcode(opcode: Int) = {
+  private def parseOpcode(opcode: Int): Int = {
+    if (opcode == 99) return opcode
     val opcodeStr = opcode.toString
     opcodeStr.length match {
-      case 1 => opcode
-      case 2 => opcode
+      case 1 =>
+        param1Mode = 0 // Hundreds digit, implicit 0.
+        param2Mode = 0 // Thousands digit, implicit 0.
+        param3Mode = 0 // Ten-thousands digit, implicit 0.
+        opcode
+      case 2 =>
+        param1Mode = 0 // Hundreds digit, implicit 0.
+        param2Mode = 0 // Thousands digit, implicit 0.
+        param3Mode = 0 // Ten-thousands digit, implicit 0.
+        opcodeStr.substring(1).toInt
+      case 3 =>
+        param1Mode = opcodeStr.charAt(1).toInt // Hundreds digit.
+        param2Mode = 0 // Thousands digit, implicit 0.
+        param3Mode = 0 // Ten-thousands digit, implicit 0.
+        opcodeStr.substring(2).toInt
       case 4 =>
         param1Mode = opcodeStr.charAt(1).toInt // Hundreds digit.
         param2Mode = opcodeStr.charAt(0).toInt // Thousands digit.
@@ -31,7 +45,7 @@ class IntcodeComputer() {
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
-        opcodeStr.substring(2).toInt
+        opcodeStr.substring(3).toInt
       case 5 =>
         param1Mode = opcodeStr.charAt(2).toInt // Hundreds digit.
         param2Mode = opcodeStr.charAt(1).toInt // Thousands digit.
@@ -39,7 +53,7 @@ class IntcodeComputer() {
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
-        opcodeStr.substring(3).toInt
+        opcodeStr.substring(4).toInt
     }
   }
 
