@@ -57,7 +57,7 @@ class IntcodeComputer() {
     }
   }
 
-  def loadProgram(program: String) = {
+  def loadProgram(program: String): Unit = {
     this.program = program
   }
 
