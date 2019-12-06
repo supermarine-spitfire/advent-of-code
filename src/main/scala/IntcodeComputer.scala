@@ -19,42 +19,42 @@ class IntcodeComputer() {
     result
   }
 
-  private def parseOpcode(opcode: Int): Int = {
-    if (opcode == 99) return opcode
-    val opcodeStr = opcode.toString
-    println(s"opcodeStr: $opcodeStr")
-    opcodeStr.length match {
+  private def parseOpcode(instruction: Int): Int = {
+    if (instruction == 99) return instruction
+    val instructionStr = instruction.toString
+    println(s"instructionStr: $instructionStr")
+    instructionStr.length match {
       case 1 =>
         param1Mode = 0 // Hundreds digit, implicit 0.
         param2Mode = 0 // Thousands digit, implicit 0.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
-        opcode
+        instruction
       case 2 =>
         param1Mode = 0 // Hundreds digit, implicit 0.
         param2Mode = 0 // Thousands digit, implicit 0.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
-        opcodeStr.substring(1).toInt
+        instructionStr.substring(1).toInt
       case 3 =>
-        param1Mode = opcodeStr.charAt(1).toInt // Hundreds digit.
+        param1Mode = instructionStr.charAt(1).toInt // Hundreds digit.
         param2Mode = 0 // Thousands digit, implicit 0.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
-        opcodeStr.substring(2).toInt
+        instructionStr.substring(2).toInt
       case 4 =>
-        param1Mode = opcodeStr.charAt(1).toInt // Hundreds digit.
-        param2Mode = opcodeStr.charAt(0).toInt // Thousands digit.
+        param1Mode = instructionStr.charAt(1).toInt // Hundreds digit.
+        param2Mode = instructionStr.charAt(0).toInt // Thousands digit.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
-        opcodeStr.substring(3).toInt
+        instructionStr.substring(3).toInt
       case 5 =>
-        param1Mode = opcodeStr.charAt(2).toInt // Hundreds digit.
-        param2Mode = opcodeStr.charAt(1).toInt // Thousands digit.
-        param3Mode = opcodeStr.charAt(0).toInt // Ten-thousands digit.
+        param1Mode = instructionStr.charAt(2).toInt // Hundreds digit.
+        param2Mode = instructionStr.charAt(1).toInt // Thousands digit.
+        param3Mode = instructionStr.charAt(0).toInt // Ten-thousands digit.
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
-        opcodeStr.substring(4).toInt
+        instructionStr.substring(4).toInt
     }
   }
 
