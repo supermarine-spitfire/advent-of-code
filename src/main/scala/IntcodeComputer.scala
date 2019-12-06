@@ -63,34 +63,58 @@ class IntcodeComputer() {
     while (i < machineTape.length) {
       val opcode = parseOpcode(machineTape(i))
       println(s"opcode: $opcode")
-      if (opcode == 99) {
-        // Halt.
-        i = machineTape.length + 1
-      } else if (opcode == 3) {
-        // Get input.
-        val address = machineTape(i + 1)
-        val input = StdIn.readLine("Enter integer: ").toInt
-        machineTape(address) = input
-        println(s"Program tape modified to: ${machineTape.mkString(",")}")
-        i += 2
-      } else if (opcode == 4) {
-        // Print output.
-        val address = machineTape(i + 1)
-        val output = machineTape(address)
-        println(s"Output: $output")
-        i += 2
-      } else {
-        val lIndex = machineTape(i + 1)
-        val rIndex = machineTape(i + 2)
-        val resIndex = machineTape(i + 3)
-        val result = evalOpcode(machineTape, lIndex, rIndex, opcode)
-        if (result == Int.MinValue) {
-          Console.err.println("UNRECOGNISED OPCODE.")
-          return "ERROR"
-        } else {
-          machineTape(resIndex) = result
+      opcode match {
+        case 1 => {
+          // Addition.
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val resIndex = machineTape(i + 3)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          machineTape(resIndex) = lVal + rVal
+          i += 4
         }
-        i += 4
+        case 2 => {
+          // Multiplication.
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val resIndex = machineTape(i + 3)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          machineTape(resIndex) = lVal * rVal
+          i += 4
+        }
+        case 3 => {
+          // Get input.
+          val address = machineTape(i + 1)
+          val input = StdIn.readLine("Enter integer: ").toInt
+          machineTape(address) = input
+          println(s"Program tape modified to: ${machineTape.mkString(",")}")
+          i += 2
+        }
+        case 4 => {
+          // Print output.
+          val address = machineTape(i + 1)
+          val output = machineTape(address)
+          println(s"Output: $output")
+          i += 2
+        }
+        case 5 => {
+          // Jump-if-true.
+        }
+        case 6 => {
+          // Jump-if-false.
+        }
+        case 7 => {
+          // Less than.
+        }
+        case 8 => {
+          // Equals.
+        }
+        case 99 => {
+          // Halt.
+          i = machineTape.length + 1
+        }
       }
     }
     machineTape.mkString(",")
