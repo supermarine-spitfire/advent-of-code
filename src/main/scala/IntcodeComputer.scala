@@ -1,4 +1,5 @@
 import scala.io.Source
+import scala.io.StdIn
 
 class IntcodeComputer(val program: String) {
   private def evalOpcode(tape: Array[Int], lIndex: Int, rIndex: Int, opcode: Int): Int = {
@@ -19,7 +20,19 @@ class IntcodeComputer(val program: String) {
     while (i < machineTape.length) {
       val opcode = machineTape(i)
       if (opcode == 99) {
+        // Halt.
         i = machineTape.length + 1
+      } else if (opcode == 3) {
+        // Get input.
+        val address = machineTape(i + 1)
+        val input = StdIn.readLine("Enter integer: ").toInt
+        machineTape(address) = input
+        i += 2
+      } else if (opcode == 4) {
+        // Print output.
+        val output = machineTape(i + 2)
+        println(output)
+        i += 2
       } else {
         val lIndex = machineTape(i + 1)
         val rIndex = machineTape(i + 2)
@@ -31,8 +44,8 @@ class IntcodeComputer(val program: String) {
         } else {
           machineTape(resIndex) = result
         }
+        i += 4
       }
-      i += 4
     }
     machineTape.mkString(",")
   }
@@ -84,17 +97,21 @@ class IntcodeComputer(val program: String) {
 object IntcodeComputer {
   def main(args: Array[String]): Unit = {
     if (args.length > 0) {
-      val pgmStr = Source.fromFile(args(0)).getLines.mkString
-      println(s"pgmStr: $pgmStr")
-      val computer = new IntcodeComputer(pgmStr)
-      println("Part 1 Output")
-      val result = computer.run()
+//      val pgmStr = Source.fromFile(args(0)).getLines.mkString
+//      println(s"pgmStr: $pgmStr")
+//      val computer = new IntcodeComputer(pgmStr)
+//      println("Part 1 Output")
+//      val result = computer.run()
+//      println(result)
+//      println("Part 2 Output")
+//      val (noun, verb) = computer.findInputs("19690720", 0, 99)
+//      println(s"noun: $noun")
+//      println(s"verb: $verb")
+//      println(s"100 * $noun + $verb = ${100 * noun + verb}")
+      var pgm = "3,0,4,0,99"
+      var computer = new IntcodeComputer(pgm)
+      var result = computer.run()
       println(result)
-      println("Part 2 Output")
-      val (noun, verb) = computer.findInputs("19690720", 0, 99)
-      println(s"noun: $noun")
-      println(s"verb: $verb")
-      println(s"100 * $noun + $verb = ${100 * noun + verb}")
     } else {
       Console.err.println("Please enter filename.")
     }
