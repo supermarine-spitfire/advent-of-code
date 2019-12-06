@@ -1,10 +1,12 @@
 import scala.io.Source
 import scala.io.StdIn
 
-class IntcodeComputer(val program: String) {
+class IntcodeComputer() {
   private var param1Mode = -1;
   private var param2Mode = -1;
   private var param3Mode = -1;
+
+  private var program = "";
 
   private def evalOpcode(tape: Array[Int], lIndex: Int, rIndex: Int, opcode: Int): Int = {
     val lVal = if (param1Mode == 0) tape(lIndex) else lIndex
@@ -39,6 +41,10 @@ class IntcodeComputer(val program: String) {
         println(s"param3Mode: $param3Mode")
         opcodeStr.substring(3).toInt
     }
+  }
+
+  def loadProgram(program: String) = {
+    this.program = program
   }
 
   def run(): String = {
@@ -137,7 +143,8 @@ object IntcodeComputer {
 //      println(s"verb: $verb")
 //      println(s"100 * $noun + $verb = ${100 * noun + verb}")
       var pgm = "3,0,4,0,99"
-      var computer = new IntcodeComputer(pgm)
+      var computer = new IntcodeComputer()
+      computer.loadProgram(pgm)
       var result = computer.run()
       println(result)
     } else {
