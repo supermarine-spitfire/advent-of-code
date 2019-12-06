@@ -80,7 +80,8 @@ class IntcodeComputer() {
         i += 2
       } else if (opcode == 4) {
         // Print output.
-        val output = machineTape(i + 2)
+        val address = machineTape(i + 1)
+        val output = machineTape(address)
         println(s"Output: $output")
         i += 2
       } else {
