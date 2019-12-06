@@ -62,7 +62,7 @@ class IntcodeComputer() {
     while (i < machineTape.length) {
       val opcode = parseOpcode(machineTape(i))
       opcode match {
-        case 1 => {
+        case 1 =>
           // Addition.
           val lIndex = machineTape(i + 1)
           val rIndex = machineTape(i + 2)
@@ -71,8 +71,7 @@ class IntcodeComputer() {
           val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
           machineTape(resIndex) = lVal + rVal
           i += 4
-        }
-        case 2 => {
+        case 2 =>
           // Multiplication.
           val lIndex = machineTape(i + 1)
           val rIndex = machineTape(i + 2)
@@ -81,37 +80,65 @@ class IntcodeComputer() {
           val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
           machineTape(resIndex) = lVal * rVal
           i += 4
-        }
-        case 3 => {
+        case 3 =>
           // Get input.
           val address = machineTape(i + 1)
           val input = StdIn.readLine("Enter integer: ").toInt
           machineTape(address) = input
           i += 2
-        }
-        case 4 => {
+        case 4 =>
           // Print output.
           val address = machineTape(i + 1)
           val output = machineTape(address)
           println(s"Output: $output")
           i += 2
-        }
-        case 5 => {
+        case 5 =>
           // Jump-if-true.
-        }
-        case 6 => {
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          if (lVal != 0) {
+            // Jump to address.
+            i = rVal
+          } else {
+            // Advance to next instruction.
+            i += 3
+          }
+        case 6 =>
           // Jump-if-false.
-        }
-        case 7 => {
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          if (lVal == 0) {
+            // Jump to address.
+            i = rVal
+          } else {
+            // Advance to next instruction.
+            i += 3
+          }
+        case 7 =>
           // Less than.
-        }
-        case 8 => {
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val resIndex = machineTape(i + 3)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          machineTape(resIndex) = if (lVal < rVal) 1 else 0
+          i += 4
+        case 8 =>
           // Equals.
-        }
-        case 99 => {
+          val lIndex = machineTape(i + 1)
+          val rIndex = machineTape(i + 2)
+          val resIndex = machineTape(i + 3)
+          val lVal = if (param1Mode == 0) machineTape(lIndex) else lIndex
+          val rVal = if (param2Mode == 0) machineTape(rIndex) else rIndex
+          machineTape(resIndex) = if (lVal == rVal) 1 else 0
+          i += 4
+        case 99 =>
           // Halt.
           i = machineTape.length + 1
-        }
       }
     }
     machineTape.mkString(",")
@@ -164,11 +191,27 @@ class IntcodeComputer() {
 object IntcodeComputer {
   def main(args: Array[String]): Unit = {
     val filename = "day-5-input.txt"
-    // Test
+    // Part 1 test
+    println("PART 1")
     var pgm = "3,0,4,0,99"
     runProgram(pgm)
 
     // Part 1
+    pgm = Source.fromFile(filename).getLines.mkString
+    runProgram(pgm)
+
+    // Part 2 tests
+    println("PART 2")
+    pgm = "3,9,8,9,10,9,4,9,99,-1,8"  // Output "1" if input = 8, "0" otherwise.
+    runProgram(pgm)
+    pgm = "3,9,7,9,10,9,4,9,99,-1,8"  // Output "1" if input < 8, "0" otherwise.
+    runProgram(pgm)
+    pgm = "3,3,1108,-1,8,3,4,3,99"  // Output "1" if input = 8, "0" otherwise.
+    runProgram(pgm)
+    pgm = "3,3,1107,-1,8,3,4,3,99"  // Output "1" if input < 8, "0" otherwise.
+    runProgram(pgm)
+
+    // Part 2
     pgm = Source.fromFile(filename).getLines.mkString
     runProgram(pgm)
   }
