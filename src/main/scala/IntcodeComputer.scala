@@ -130,25 +130,21 @@ class IntcodeComputer() {
 
 object IntcodeComputer {
   def main(args: Array[String]): Unit = {
-    if (args.length > 0) {
-//      val pgmStr = Source.fromFile(args(0)).getLines.mkString
-//      println(s"pgmStr: $pgmStr")
-//      val computer = new IntcodeComputer(pgmStr)
-//      println("Part 1 Output")
-//      val result = computer.run()
-//      println(result)
-//      println("Part 2 Output")
-//      val (noun, verb) = computer.findInputs("19690720", 0, 99)
-//      println(s"noun: $noun")
-//      println(s"verb: $verb")
-//      println(s"100 * $noun + $verb = ${100 * noun + verb}")
-      var pgm = "3,0,4,0,99"
-      var computer = new IntcodeComputer()
-      computer.loadProgram(pgm)
-      var result = computer.run()
-      println(result)
-    } else {
-      Console.err.println("Please enter filename.")
-    }
+    val filename = "day-5-input.txt"
+    // Test
+    var pgm = "3,0,4,0,99"
+    runProgram(pgm)
+
+    // Part 1
+    pgm = Source.fromFile(filename).getLines.mkString
+    runProgram(pgm)
+  }
+
+  def runProgram(program: String) = {
+    println(s"Program tape: $program")
+    val computer = new IntcodeComputer()
+    computer.loadProgram(program)
+    val result = computer.run()
+    println(s"Machine tape: $result")
   }
 }
