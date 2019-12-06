@@ -35,22 +35,22 @@ class IntcodeComputer() {
         param3Mode = 0 // Ten-thousands digit, implicit 0.
         instructionStr.substring(1).toInt
       case 3 =>
-        param1Mode = instructionStr.charAt(1).toInt // Hundreds digit.
+        param1Mode = instructionStr.substring(1, 2).toInt // Hundreds digit.
         param2Mode = 0 // Thousands digit, implicit 0.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
         instructionStr.substring(2).toInt
       case 4 =>
-        param1Mode = instructionStr.charAt(1).toInt // Hundreds digit.
-        param2Mode = instructionStr.charAt(0).toInt // Thousands digit.
+        param1Mode = instructionStr.substring(1, 2).toInt // Hundreds digit.
+        param2Mode = instructionStr.substring(0, 1).toInt // Thousands digit.
         param3Mode = 0 // Ten-thousands digit, implicit 0.
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
         instructionStr.substring(3).toInt
       case 5 =>
-        param1Mode = instructionStr.charAt(2).toInt // Hundreds digit.
-        param2Mode = instructionStr.charAt(1).toInt // Thousands digit.
-        param3Mode = instructionStr.charAt(0).toInt // Ten-thousands digit.
+        param1Mode = instructionStr.substring(2, 3).toInt // Hundreds digit.
+        param2Mode = instructionStr.substring(1, 2).toInt // Thousands digit.
+        param3Mode = instructionStr.substring(0, 1).toInt // Ten-thousands digit.
         println(s"param1Mode: $param1Mode")
         println(s"param2Mode: $param2Mode")
         println(s"param3Mode: $param3Mode")
@@ -151,7 +151,7 @@ object IntcodeComputer {
     val filename = "day-5-input.txt"
     // Test
     var pgm = "3,0,4,0,99"
-    runProgram(pgm)
+//    runProgram(pgm)
 
     // Part 1
     pgm = Source.fromFile(filename).getLines.mkString
