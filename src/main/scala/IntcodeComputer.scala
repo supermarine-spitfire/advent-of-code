@@ -151,7 +151,7 @@ object IntcodeComputer {
     val filename = "day-5-input.txt"
     // Test
     var pgm = "3,0,4,0,99"
-//    runProgram(pgm)
+    runProgram(pgm)
 
     // Part 1
     pgm = Source.fromFile(filename).getLines.mkString
