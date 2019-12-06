@@ -22,6 +22,7 @@ class IntcodeComputer() {
   private def parseOpcode(opcode: Int): Int = {
     if (opcode == 99) return opcode
     val opcodeStr = opcode.toString
+    println(s"opcodeStr: $opcodeStr")
     opcodeStr.length match {
       case 1 =>
         param1Mode = 0 // Hundreds digit, implicit 0.
@@ -67,6 +68,7 @@ class IntcodeComputer() {
     var i = 0
     while (i < machineTape.length) {
       val opcode = parseOpcode(machineTape(i))
+      println(s"opcode: $opcode")
       if (opcode == 99) {
         // Halt.
         i = machineTape.length + 1
@@ -79,7 +81,7 @@ class IntcodeComputer() {
       } else if (opcode == 4) {
         // Print output.
         val output = machineTape(i + 2)
-        println(output)
+        println(s"Output: $output")
         i += 2
       } else {
         val lIndex = machineTape(i + 1)
