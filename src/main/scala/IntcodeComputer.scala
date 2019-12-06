@@ -2,9 +2,13 @@ import scala.io.Source
 import scala.io.StdIn
 
 class IntcodeComputer(val program: String) {
+  private var param1Mode = -1;
+  private var param2Mode = -1;
+  private var param3Mode = -1;
+
   private def evalOpcode(tape: Array[Int], lIndex: Int, rIndex: Int, opcode: Int): Int = {
-    val lVal = tape(lIndex)
-    val rVal = tape(rIndex)
+    val lVal = if (param1Mode == 0) tape(lIndex) else lIndex
+    val rVal = if (param2Mode == 0) tape(rIndex) else rIndex
     val result = opcode match {
       case 1 => lVal + rVal
       case 2 => lVal * rVal
@@ -13,12 +17,36 @@ class IntcodeComputer(val program: String) {
     result
   }
 
+  private def parseOpcode(opcode: Int) = {
+    val opcodeStr = opcode.toString
+    opcodeStr.length match {
+      case 1 => opcode
+      case 2 => opcode
+      case 4 =>
+        param1Mode = opcodeStr.charAt(1).toInt // Hundreds digit.
+        param2Mode = opcodeStr.charAt(0).toInt // Thousands digit.
+        param3Mode = 0 // Ten-thousands digit, implicit 0.
+        println(s"param1Mode: $param1Mode")
+        println(s"param2Mode: $param2Mode")
+        println(s"param3Mode: $param3Mode")
+        opcodeStr.substring(2).toInt
+      case 5 =>
+        param1Mode = opcodeStr.charAt(2).toInt // Hundreds digit.
+        param2Mode = opcodeStr.charAt(1).toInt // Thousands digit.
+        param3Mode = opcodeStr.charAt(0).toInt // Ten-thousands digit.
+        println(s"param1Mode: $param1Mode")
+        println(s"param2Mode: $param2Mode")
+        println(s"param3Mode: $param3Mode")
+        opcodeStr.substring(3).toInt
+    }
+  }
+
   def run(): String = {
     val machineTape = program.split(",").map(s => s.toInt)
 
     var i = 0
     while (i < machineTape.length) {
-      val opcode = machineTape(i)
+      val opcode = parseOpcode(machineTape(i))
       if (opcode == 99) {
         // Halt.
         i = machineTape.length + 1
