@@ -1,6 +1,8 @@
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
+case class Vertex[T](label: String, wasVisited: Boolean)
+
 class OrbitMap {
   private val orbitGraph = collection.mutable.HashMap[String, ListBuffer[String]]()
   private var centralBody = ""
