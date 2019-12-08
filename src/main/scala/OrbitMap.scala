@@ -3,7 +3,7 @@ import scala.io.Source
 
 class OrbitMap {
   private val orbitGraph = new mutable.HashMap[String, String]()
-  private val start = "COM"
+  private val centreOfMass = "COM"
 
   def defineOrbits(orbits: Seq[String]): Unit = {
     for (orbit <- orbits) {
@@ -22,7 +22,7 @@ class OrbitMap {
     while (keyQueue.nonEmpty) {
       var key = keyQueue.pop()
       var value = this.orbitGraph(key)
-      while (value != this.start) {
+      while (value != this.centreOfMass) {
         numOrbits += 1
         key = value
         value = this.orbitGraph(key)
