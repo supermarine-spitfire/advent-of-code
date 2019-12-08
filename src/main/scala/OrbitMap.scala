@@ -14,6 +14,28 @@ class OrbitMap {
     }
   }
 
+  def countOrbitalTransfers(
+      startVertex: String, endVertex: String, commonAncestor: String
+  ): Unit = {
+    var numOrbitalTransfers = 0
+    val keyQueue = mutable.Stack[String]()
+    keyQueue.push(startVertex)
+    keyQueue.push(endVertex)
+
+    while (keyQueue.nonEmpty) {
+      var key = keyQueue.pop()
+      var value = this.orbitGraph(key)
+      while (value != commonAncestor) {
+        numOrbitalTransfers += 1
+        key = value
+        value = this.orbitGraph(key)
+      }
+      numOrbitalTransfers += 1
+    }
+
+    println(s"Total number of orbital transfers: $numOrbitalTransfers")
+  }
+
   def countNumOrbits(): Unit = {
     var numOrbits = 0
     val keyQueue = mutable.Stack[String]()
@@ -50,6 +72,10 @@ class OrbitMap {
   def reset(): Unit = {
     this.orbitGraph.clear()
   }
+
+  def getParentBody(child: String): String = {
+    this.orbitGraph(child)
+  }
 }
 
 object OrbitMap {
@@ -59,6 +85,11 @@ object OrbitMap {
     partOne(input)
     input = Source.fromFile(filename).getLines.toArray
     partOne(input)
+
+    input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L\nK)YOU\nI)SAN".split("\n")
+    partTwo(input)
+    input = Source.fromFile(filename).getLines.toArray
+    partTwo(input)
   }
 
   def partOne(input: Seq[String]): Unit = {
@@ -67,5 +98,39 @@ object OrbitMap {
     orbitMap.defineOrbits(input)
     orbitMap.countNumOrbits()
     orbitMap.reset()
+  }
+
+  def partTwo(input: Seq[String]): Unit = {
+    println("PART TWO")
+    val orbitMap = new OrbitMap()
+    orbitMap.defineOrbits(input)
+    val santaPath = orbitMap.findPathToCentre("SAN")
+    val youPath = orbitMap.findPathToCentre("YOU")
+    println(s"santaPath: $santaPath")
+    println(s"youPath: $youPath")
+
+    var curSantaVertex = santaPath.pop()
+    var curYouVertex = youPath.pop()
+    var lastCommonAncestor = ""
+
+    while (curSantaVertex == curYouVertex) {
+      println(s"curSantaVertex: $curSantaVertex")
+      println(s"curYouVertex: $curYouVertex")
+      lastCommonAncestor = curSantaVertex
+      curSantaVertex = santaPath.pop()
+      curYouVertex = youPath.pop()
+    }
+
+    val startVertex = orbitMap.getParentBody("YOU")
+    val endVertex = orbitMap.getParentBody("SAN")
+    println(s"lastCommonAncestor: $lastCommonAncestor")
+    println(s"startVertex: $startVertex")
+    println(s"endVertex: $endVertex")
+
+    orbitMap.countOrbitalTransfers(
+      startVertex = startVertex,
+      endVertex = endVertex,
+      commonAncestor = lastCommonAncestor
+    )
   }
 }
