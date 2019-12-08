@@ -33,6 +33,20 @@ class OrbitMap {
     println(s"Total number of orbits: $numOrbits")
   }
 
+  def findPathToCentre(start: String): mutable.Stack[String] = {
+    val path = mutable.Stack[String]()
+
+    var value = ""
+    var key = start
+    while (value != this.centreOfMass) {
+      value = this.orbitGraph(key)
+      path.push(value)
+      key = value
+    }
+
+    path
+  }
+
   def reset(): Unit = {
     this.orbitGraph.clear()
   }
