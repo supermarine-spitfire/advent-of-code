@@ -1,4 +1,6 @@
-import Colour.Colour
+package graph
+
+import graph.Colour.Colour
 
 /**
  * Defines a graph vertex.
@@ -8,4 +10,4 @@ import Colour.Colour
  * distance: The number of edges between a source vertex and the vertex.
  * parent: The predecessor of the vertex.
  */
-case class Vertex[T](label: String, colour: Colour, distance: Int, parent: Vertex[T])
+case class Vertex[T](var label: T, var colour: Colour, var distance: Int, var parent: Vertex[T])

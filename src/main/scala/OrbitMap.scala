@@ -1,21 +1,19 @@
-import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
-case class Vertex[T](label: String, wasVisited: Boolean)
+import graph._
 
 class OrbitMap {
-  private val orbitGraph = collection.mutable.HashMap[String, ListBuffer[String]]()
-  private var centralBody = ""
+  private val orbitGraph = new Graph[String]()
+  private var centralBodyStr = ""
+  private var centralBody:Vertex[String] = _
 
-  private def makeOrbit(parent: String, child: String) = {
-    if (!orbitGraph.keySet.exists(k => k.equals(parent))) {
-      // New parent body found.
-      orbitGraph(parent) = ListBuffer[String]()
-      orbitGraph(parent) += child
-    } else {
-      // Existing body found.
-      orbitGraph(parent) += child
+  def makeOrbit(parent: String, child: String) = {
+    val parentVertex = orbitGraph.addVertex(parent)
+    if (parent == centralBodyStr) {
+      centralBody = parentVertex
     }
+    val childVertex = orbitGraph.addVertex(child)
+    orbitGraph.addEdge(parentVertex, childVertex)
   }
 
   def defineOrbits(orbits: Seq[String]): Unit = {
@@ -23,21 +21,53 @@ class OrbitMap {
       val orbitBodies = orbit.split(raw"\)")
       val parent = orbitBodies(0)
       val child = orbitBodies(1)
-      if (centralBody.equals("")) {
+      println(s"parent: $parent")
+      println(s"child: $child")
+      if (centralBodyStr.equals("")) {
         // Define the starting point.
-        centralBody = parent
+        centralBodyStr = parent
       }
-      this.makeOrbit(parent, child)
+      makeOrbit(parent, child)
+      println()
     }
-    println(s"this.orbitGraph: ${this.orbitGraph}")
+//    println(s"this.orbitGraph: ${this.orbitGraph}")
+  }
+
+  def countNumOrbits() = {
+    orbitGraph.bfs(centralBody)
+    println(s"vertices (before filtering): ${orbitGraph.getVertices}")
+    val vertices = orbitGraph.getVertices.filter(
+      v => v.colour == Colour.Black || v.colour == Colour.Grey
+    )
+    println(s"vertices (after filtering): $vertices")
+
+    var totalOrbits = 0
+    for (v <- vertices) {
+      println(s"v: (${v.label}, ${v.distance})")
+      totalOrbits += v.distance
+    }
+    println(s"Total number of orbits: $totalOrbits")
+  }
+
+  def reset() = {
+    orbitGraph.reset()
+    centralBody = null
+    centralBodyStr = ""
   }
 }
 
 object OrbitMap {
   def main(args: Array[String]): Unit = {
     val filename = "day-6-input.txt"
-    val input = Source.fromFile(filename).getLines.toList
+    var input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L".split("\n")
+    partOne(input)
+//    input = Source.fromFile(filename).getLines.toList
+//    partOne(input)
+  }
+
+  def partOne(input: Seq[String]) = {
     val orbitMap = new OrbitMap()
     orbitMap.defineOrbits(input)
+    orbitMap.countNumOrbits()
   }
 }
