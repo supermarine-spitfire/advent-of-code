@@ -61,7 +61,8 @@ object OrbitMap {
     partOne(input)
   }
 
-  def partOne(input: Seq[String]) = {
+  def partOne(input: Seq[String]): Unit = {
+    println("PART ONE")
     val orbitMap = new OrbitMap()
     orbitMap.defineOrbits(input)
     orbitMap.countNumOrbits()
