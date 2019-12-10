@@ -1,7 +1,8 @@
+import scala.collection.mutable
 import scala.io.Source
 import scala.io.StdIn
 
-class IntcodeComputer() {
+class IntcodeComputer(val buffer: mutable.Queue[Int] = mutable.Queue[Int]()) {
   private var param1Mode = -1
   private var param2Mode = -1
   private var param3Mode = -1
@@ -55,7 +56,7 @@ class IntcodeComputer() {
     this.program = program
   }
 
-  def run(): String = {
+  def run(interactiveMode: Boolean = true): String = {
     val machineTape = program.split(",").map(s => s.toInt)
 
     var i = 0
@@ -83,14 +84,21 @@ class IntcodeComputer() {
         case 3 =>
           // Get input.
           val address = machineTape(i + 1)
-          val input = StdIn.readLine("Enter integer: ").toInt
+          val input = if (interactiveMode)
+            StdIn.readLine("Enter integer: ").toInt
+          else
+            buffer.dequeue()
           machineTape(address) = input
           i += 2
         case 4 =>
           // Print output.
           val address = machineTape(i + 1)
           val output = machineTape(address)
-          println(s"Output: $output")
+          if (interactiveMode) {
+            println(s"Output: $output")
+          } else {
+            buffer.enqueue(output)
+          }
           i += 2
         case 5 =>
           // Jump-if-true.
