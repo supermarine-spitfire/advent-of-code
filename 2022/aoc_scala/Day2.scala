@@ -1,10 +1,14 @@
 import scala.collection.Map
 import scala.io.Source
 
+def arrayToTuple(arr: Array[String]): Tuple2[String, String] =
+    // Assumes arr is of length 2.
+    (arr(0), arr(1))
+
 @main def dayTwo() =
     println("Advent of Code Day 2")
     println("--------------------")
-    val strategyGuide = Source.fromFile("input/day-2-input.txt").getLines().map((s: String) => s.split(" "))
+    val strategyGuide = Source.fromFile("input/day-2-input.txt").getLines().map((s: String) => arrayToTuple(s.split(" ")))
 
     // Read sums as outcome score plus shape score.
     val perfectDecisionMatrix = Map[String, Map[String, Int]](  // Start looking up by opponent, then by player.
