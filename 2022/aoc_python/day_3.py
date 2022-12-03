@@ -28,3 +28,32 @@ print("======")
 # Attempt 1: 10716 (too high)
 # Attempt 2: 7917 (correct)
 
+# rucksacks = io.file_to_list("input/day-3-test-data.txt")
+total_priorities = 0
+num_iterations = 0
+# i = 3
+i = 0
+# while i <= len(rucksacks):
+while i <= len(rucksacks) - 3:
+    # print(f"i: {i}")
+    # Get all items in common between the rucksacks, grouped in threes.
+    # common_items = set(rucksacks[i - 3]) & set(rucksacks[i - 2]) & set(rucksacks[i - 1])
+    common_items = set(rucksacks[i]) & set(rucksacks[i + 1]) & set(rucksacks[i + 2])
+    # print(f"common_items: {common_items}")
+
+    # Calculate total priority of common items.
+    total_priorities += sum(priorities[item] for item in common_items)
+
+    i += 3
+    num_iterations += 1
+
+# print(f"len(rucksacks): {len(rucksacks)}")
+# print(f"num_iterations: {num_iterations}")
+# print(f"i: {i}")
+
+print("PART 2")
+print("======")
+print(f"Total priorities: {total_priorities}")
+print("======")
+# Attempt 1: 2566 (too low)
+# Attempt 2: 2585 (correct)
