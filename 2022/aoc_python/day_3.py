@@ -13,10 +13,10 @@ for rucksack in rucksacks:
     # Get all items in common between both compartments.
     compartment_1 = rucksack[:len(rucksack) // 2]
     compartment_2 = rucksack[len(rucksack) // 2:]
-    print(f"compartment_1: {compartment_1}")
-    print(f"compartment_2: {compartment_2}")
+    # print(f"compartment_1: {compartment_1}")
+    # print(f"compartment_2: {compartment_2}")
     common_items = set(item for item in compartment_1 if item in compartment_2)
-    print(f"common_items: {common_items}")
+    # print(f"common_items: {common_items}")
 
     # Calculate total priority of common items.
     total_priorities += sum(priorities[item] for item in common_items)
