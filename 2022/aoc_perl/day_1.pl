@@ -2,23 +2,19 @@
 use strict;
 use warnings;
 
-use Path::Tiny;
-use autodie;
+use FindBin;                                # Useful for finding directory where script is being invoked.
+use lib "$FindBin::Bin/../aoc_perl/lib";    # Identifies library folder.
+
+use util qw(file_to_array println);
 
 print("Advent of Code 2022 Day 1\n");
 print("-------------------------\n");
 
 # Load calorie counts.
-my $dir = path("input");
-my $calorie_file = $dir->child("day-1-input.txt");
-my $file_handle = $calorie_file->openr_utf8();
-
-my @calorie_counts = ();
-while ( my $line = $file_handle->getline() ) {
-    $line =~ s/^\s+|\s+$//g;    # Trims whitespace from before and after line.
-    unshift(@calorie_counts, $line);    # Enqueue operation.
-}
-close($file_handle);
+my @calorie_counts = file_to_array(
+    PATH_TO_FILE => "$FindBin::Bin/../input",
+    FILE_NAME => "day-1-input.txt"
+);
 # print("calorie_counts: @calorie_counts\n");
 
 # Get total calories carried by each elf.
@@ -46,7 +42,7 @@ print("Highest calorie count: $total_calories[0]\n");
 print("======\n");
 
 # Get sum of top three calorie counts.
-print("PART 2");
-print("======");
+print("PART 2\n");
+print("======\n");
 my $top_three_calorie_sum = $total_calories[0] + $total_calories[1] + $total_calories[2];
 print("Top three calorie sum: $top_three_calorie_sum\n");
