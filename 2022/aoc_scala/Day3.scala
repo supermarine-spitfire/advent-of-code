@@ -31,10 +31,12 @@ import scala.io.Source
     totalPriorities = 0
     var i = 0
     while i < rucksacks.length do
+        // Get all items in common between the rucksacks, grouped in threes.
         val commonItems = (
             rucksacks(i).toSet & rucksacks(i + 1).toSet & rucksacks(i + 2).toSet
             ).map(_.toString())
 
+        // Calculate total priority of common items.
         totalPriorities += priorities(commonItems.toList.head)
         i += 3
 
