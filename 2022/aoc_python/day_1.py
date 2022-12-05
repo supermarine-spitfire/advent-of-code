@@ -17,7 +17,7 @@ for calorie_count in calorie_counts:
         calorie_sum = 0
 
 # Get highest calorie count.
-total_calories.sort()
+total_calories.sort(reverse=True)
 print("PART 1")
 print("======")
 print(f"Highest calorie count: {total_calories[0]}")
@@ -26,5 +26,5 @@ print("======")
 # Get sum of top three calorie counts.
 print("PART 2")
 print("======")
-top_three_calorie_sum = total_calories.pop() + total_calories.pop() + total_calories.pop()
+top_three_calorie_sum = sum(total_calories[0:3])
 print(f"Top three calorie sum: {top_three_calorie_sum}")

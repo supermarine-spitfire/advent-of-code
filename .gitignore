@@ -1,2 +1,6 @@
 # Cached files.
 **/__pycache__/**
+
+# Configuration files.
+.vscode/**
+.metals/**
