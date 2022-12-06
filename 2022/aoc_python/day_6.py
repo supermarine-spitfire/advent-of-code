@@ -24,3 +24,10 @@ print(f"First marker index: {start_of_packet_index}")
 print("======")
 # Attempt 1: 1658.
 
+# Sweep a window of size 14 across signal_input, looking for a substring of 14 unique characters.
+start_of_message_index = find_unique_substring_starting_index(str=signal_input, substring_length=14)
+
+print("PART 2")
+print("======")
+print(f"First marker index: {start_of_message_index}")
+# Attempt 1: 2260.
