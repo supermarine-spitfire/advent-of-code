@@ -1,5 +1,7 @@
 # Cached files.
 **/__pycache__/**
+**/*.class
+**/*.tasty
 
 # Configuration files.
 .vscode/**
