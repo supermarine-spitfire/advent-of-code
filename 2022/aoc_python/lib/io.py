@@ -8,3 +8,8 @@ def file_to_list(filename):
     with open(resolve_filepath(filename)) as f:
         file_contents = f.read()
         return file_contents.split("\n")
+
+def file_to_string(filename):
+    """Returns the contents of a text file as one string."""
+    with open(resolve_filepath(filename)) as f:
+        return f.read()
