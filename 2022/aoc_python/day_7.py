@@ -8,7 +8,7 @@ class InstructionType(Enum):
     DIRECTORY = 2
     FILE = 3
 
-class DirectoryState:
+class Directory:
     def __init__(self, current_directory=None):
         self.current_directory = current_directory
         self.directories = []
@@ -71,25 +71,26 @@ visited: {self.visited}
 
     def __eq__(self, other):
         """Overrides default implementation."""
-        if isinstance(other, DirectoryState):
+        if isinstance(other, Directory):
             return self.current_directory == other.current_directory \
                    and self.files == other.files \
                    and self.total_size == other.total_size
 
         return False
 
+
 print("Advent of Code 2022 Day 7")
 print("-------------------------")
-terminal_output = io.file_to_list("input/day-7-test-data.txt")
+# terminal_output = io.file_to_list("input/day-7-test-data.txt")
 # terminal_output = io.file_to_list("input/day-7-test-data-2.txt")
-# terminal_output = io.file_to_list("input/day-7-input.txt")
+terminal_output = io.file_to_list("input/day-7-input.txt")
 terminal_output = [s.split(" ") for s in terminal_output]
 
 # Identify all files and directories, along with their sizes.
 # Define the topmost directory.
-root = DirectoryState(current_directory="/")
+root = Directory(current_directory="/")
 root.add_parent(None)
-cur_state = root
+cur_dir = root
 for line in terminal_output:
     print(f"line: {line}")
     # Get each instruction on its own.
@@ -112,23 +113,23 @@ for line in terminal_output:
     if cur_instruct == InstructionType.FILE:
         # Found a file; save its name and size.
         print("Found new file.")
-        cur_state.add_file(file_name=instruction2, file_size=instruction1)
-        print(f"cur_state:\n{cur_state}")
+        cur_dir.add_file(file_name=instruction2, file_size=instruction1)
+        print(f"cur_dir:\n{cur_dir}")
     elif cur_instruct == InstructionType.DIRECTORY:
         # Found a directory; save its name.
-        cur_state.directories.append(instruction2)
-        child_dir = DirectoryState(current_directory=instruction2)
-        if child_dir not in cur_state.children:
+        cur_dir.directories.append(instruction2)
+        child_dir = Directory(current_directory=instruction2)
+        if child_dir not in cur_dir.children:
             print("Found new directory.")
-            child_dir.add_parent(cur_state)
+            child_dir.add_parent(cur_dir)
             child_dir.current_directory = instruction2
-            cur_state.add_child(child_dir)
-            print(f"cur_state:\n{cur_state}")
+            cur_dir.add_child(child_dir)
+            print(f"cur_dir:\n{cur_dir}")
     else:
         # Terminal command.
         print("Found terminal command.")
         if instruction2 == "cd":
-            # cur_state.update_total_size()
+            # cur_dir.update_total_size()
             # Time to change directories.
             # Three possible states:
             # 1. Move up one directory.
@@ -137,21 +138,21 @@ for line in terminal_output:
             if instruction3 == "/":
                 # Move to root.
                 print("Moving to root.")
-                cur_state = root
-                cur_state.update_total_size()
+                cur_dir = root
+                cur_dir.update_total_size()
             elif instruction3 == "..":
                 # Move to parent directory.
                 print("Moving to parent directory.")
-                cur_state = cur_state.parent
-                cur_state.update_total_size()
+                cur_dir = cur_dir.parent
+                cur_dir.update_total_size()
             else:
                 # Move to child directory.
                 print(f"Moving to child directory {instruction3}.")
-                for child in cur_state.children:
+                for child in cur_dir.children:
                     if child.current_directory == instruction3:
-                        cur_state = child
+                        cur_dir = child
                         break
-            print(f"New cur_state:\n{cur_state}")
+            print(f"New cur_dir:\n{cur_dir}")
         elif instruction2 == "ls":
             # Listing items in current directory.
             continue
