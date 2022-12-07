@@ -15,6 +15,7 @@ class DirectoryState:
         self.files = {}  # Maps file names to file sizes.
         self.children = []
         self.total_size = 0
+        self.visited = False
 
     def add_parent(self, parent):
         self.parent = parent
@@ -27,11 +28,14 @@ class DirectoryState:
         self.total_size += int(file_size)
 
     def update_total_size(self):
+        if self.visited:
+            return
         children_size = 0
         for child in self.children:
             children_size += child.total_size
 
         self.total_size += children_size
+        self.visited = True
         # if self.children:
         #     for child in self.children:
         #         children_size += child.update_total_size()
@@ -57,11 +61,12 @@ class DirectoryState:
 
     def __str__(self):
         return f"""current_directory: {self.current_directory if self.current_directory else ""}
-directories: {self.directories if self.directories else ""}
-files: {self.files if self.files else ""}
-parent: {self.parent.current_directory if self.parent else ""}
-children: {[c.current_directory for c in self.children if c and self.children]}
+directories: {self.directories if self.directories else "None"}
+files: {self.files if self.files else "None"}
+parent: {self.parent.current_directory if self.parent else "None"}
+children: {[(c.current_directory, c.total_size) for c in self.children if c and self.children]}
 total_size: {self.total_size}
+visited: {self.visited}
         """
 
     def __eq__(self, other):
@@ -76,6 +81,7 @@ total_size: {self.total_size}
 print("Advent of Code 2022 Day 7")
 print("-------------------------")
 terminal_output = io.file_to_list("input/day-7-test-data.txt")
+# terminal_output = io.file_to_list("input/day-7-test-data-2.txt")
 # terminal_output = io.file_to_list("input/day-7-input.txt")
 terminal_output = [s.split(" ") for s in terminal_output]
 
@@ -85,6 +91,7 @@ root = DirectoryState(current_directory="/")
 root.add_parent(None)
 cur_state = root
 for line in terminal_output:
+    print(f"line: {line}")
     # Get each instruction on its own.
     instruction1 = line[0]
     instruction2 = line[1]
@@ -104,24 +111,24 @@ for line in terminal_output:
     # instruction2 is a file name, directory name, or a terminal command.
     if cur_instruct == InstructionType.FILE:
         # Found a file; save its name and size.
-        # print("Found new file.")
+        print("Found new file.")
         cur_state.add_file(file_name=instruction2, file_size=instruction1)
-        # print(f"cur_state:\n{cur_state}")
+        print(f"cur_state:\n{cur_state}")
     elif cur_instruct == InstructionType.DIRECTORY:
         # Found a directory; save its name.
         cur_state.directories.append(instruction2)
         child_dir = DirectoryState(current_directory=instruction2)
         if child_dir not in cur_state.children:
-            # print("Found new directory.")
+            print("Found new directory.")
             child_dir.add_parent(cur_state)
             child_dir.current_directory = instruction2
             cur_state.add_child(child_dir)
-            # print(f"child_dir:\n{child_dir}")
+            print(f"cur_state:\n{cur_state}")
     else:
         # Terminal command.
-        # print("Found terminal command.")
+        print("Found terminal command.")
         if instruction2 == "cd":
-            cur_state.update_total_size()
+            # cur_state.update_total_size()
             # Time to change directories.
             # Three possible states:
             # 1. Move up one directory.
@@ -129,21 +136,22 @@ for line in terminal_output:
             # 3. Move down into a child directory.
             if instruction3 == "/":
                 # Move to root.
-                # print("Moving to root.")
+                print("Moving to root.")
                 cur_state = root
-                # cur_state.update_total_size()
+                cur_state.update_total_size()
             elif instruction3 == "..":
                 # Move to parent directory.
-                # print("Moving to parent directory.")
+                print("Moving to parent directory.")
                 cur_state = cur_state.parent
-                # cur_state.update_total_size()
+                cur_state.update_total_size()
             else:
                 # Move to child directory.
-                # print(f"Moving to child directory {instruction3}.")
+                print(f"Moving to child directory {instruction3}.")
                 for child in cur_state.children:
                     if child.current_directory == instruction3:
                         cur_state = child
                         break
+            print(f"New cur_state:\n{cur_state}")
         elif instruction2 == "ls":
             # Listing items in current directory.
             continue
@@ -151,7 +159,7 @@ for line in terminal_output:
 print(f"root\n{root}")
 
 # Traverse the directory structure.
-total_size = traverse_for_sizes(dir=root, upper_limit=100000)
+total_size = root.traverse_for_sizes(upper_limit=100000)
 
 print("PART 1")
 print("======")
