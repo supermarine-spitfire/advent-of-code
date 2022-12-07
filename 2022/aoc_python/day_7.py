@@ -42,6 +42,19 @@ class DirectoryState:
     def get_total_size(self):
         return functools.reduce(lambda v, w: int(v) + int(w), self.files.values(), 0)
 
+    def traverse_for_sizes(self, upper_limit):
+        total_size = self.total_size if self.total_size <= upper_limit else 0
+        # total_size = dir.get_total_size() if dir.total_size <= upper_limit else 0
+
+        if not self.children:
+            # Base case.
+            return total_size
+        else:
+            # Recursive case.
+            for child in self.children:
+                total_size += child.traverse_for_sizes(upper_limit)
+            return total_size
+
     def __str__(self):
         return f"""current_directory: {self.current_directory if self.current_directory else ""}
 directories: {self.directories if self.directories else ""}
@@ -59,19 +72,6 @@ total_size: {self.total_size}
                    and self.total_size == other.total_size
 
         return False
-
-def traverse_for_sizes(dir, upper_limit):
-    total_size = dir.total_size if dir.total_size <= upper_limit else 0
-    # total_size = dir.get_total_size() if dir.total_size <= upper_limit else 0
-
-    if not dir.children:
-        # Base case.
-        return total_size
-    else:
-        # Recursive case.
-        for child in dir.children:
-            total_size += traverse_for_sizes(child, upper_limit)
-        return total_size
 
 print("Advent of Code 2022 Day 7")
 print("-------------------------")
