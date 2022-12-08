@@ -22,6 +22,11 @@ class Directory:
         self.files[file_name] = file_size
         # self.directory_size += int(file_size)
 
+    # TODO: Alternate approach to consider for calculating directory and file sizes:
+    # Store two sizes in each directory: total size of all contained files and total size of all contained directories.
+    # Each time a file gets added to a directory, update that directory's total contained file size.
+    # Then "bubble up" the newly added file's size to the directory's parent's total contained directory size.
+    # Repeat until the root directory is reached.
     def update_total_size(self):
         # if self.visited:
             # return
