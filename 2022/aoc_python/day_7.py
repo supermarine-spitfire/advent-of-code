@@ -86,6 +86,21 @@ class Directory:
             print(f"\ntotal_size for items within {self.current_directory}: {total_size}")
             return total_size
 
+    def get_smallest_dir(self, lower_limit):
+        """Find smallest directory that is equal to or greater than lower_limit."""
+        total_size = self.directory_size
+
+        if not self.children:
+            # Base case.
+            print("Base case.")
+            return total_size
+        else:
+             # Recursive case.
+            print("Recursive case.")
+            for child in self.children:
+                pass
+
+
     def __str__(self):
         return f"""current_directory: {self.current_directory if self.current_directory else ""}
 directories: {self.directories if self.directories else "None"}
@@ -188,3 +203,7 @@ print(f"Total size of all directories of at most 100000: {total_filtered_size}")
 print("======")
 # Attempt 1: 1855262 (too high)
 # Attempt 2: 1844187
+
+total_disk_space = 70000000
+minimum_required_disk_space = 30000000
+
