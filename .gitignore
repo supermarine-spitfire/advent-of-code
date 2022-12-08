@@ -6,3 +6,6 @@
 # Configuration files.
 .vscode/**
 .metals/**
+
+# Miscellaneous.
+2022/day-8-tree-patterns.txt
