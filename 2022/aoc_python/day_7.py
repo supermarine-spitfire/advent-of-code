@@ -10,7 +10,6 @@ class Directory:
         self.files = {}  # Maps file names to file sizes.
         self.children = []
         self.directory_size = 0
-        # self.visited = False
 
     def add_parent(self, parent):
         self.parent = parent
@@ -20,7 +19,6 @@ class Directory:
 
     def add_file(self, file_name, file_size):
         self.files[file_name] = file_size
-        # self.directory_size += int(file_size)
 
     # TODO: Alternate approach to consider for calculating directory and file sizes:
     # Store two sizes in each directory: total size of all contained files and total size of all contained directories.
@@ -28,20 +26,11 @@ class Directory:
     # Then "bubble up" the newly added file's size to the directory's parent's total contained directory size.
     # Repeat until the root directory is reached.
     def update_total_size(self):
-        # if self.visited:
-            # return
         children_size = 0
         for child in self.children:
             children_size += child.total_size
 
         self.directory_size += children_size
-        # self.visited = True
-        # if self.children:
-        #     for child in self.children:
-        #         children_size += child.update_total_size()
-        #     return children_size
-        # else:
-        #     return self.total_size
 
     def get_size_of_contents(self):
         return functools.reduce(lambda v, w: int(v) + int(w), self.files.values(), 0)
@@ -145,7 +134,6 @@ for line in terminal_output:
         # Found a terminal command.
         # print("Found terminal command.")
         if instruction2 == "cd":
-            # cur_dir.update_total_size()
             # Time to change directories.
             # Three possible states:
             # 1. Move up one directory.
@@ -155,12 +143,10 @@ for line in terminal_output:
                 # Move to root.
                 # print("Moving to root.")
                 cur_dir = root
-                # cur_dir.update_total_size()
             elif instruction3 == "..":
                 # Move to parent directory.
                 # print("Moving to parent directory.")
                 cur_dir = cur_dir.parent
-                # cur_dir.update_total_size()
             else:
                 # Move to child directory.
                 # print(f"Moving to child directory {instruction3}.")
