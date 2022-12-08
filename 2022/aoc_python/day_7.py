@@ -3,11 +3,6 @@ from enum import Enum
 
 from lib import io
 
-class InstructionType(Enum):
-    TERMINAL_OUTPUT = 1
-    DIRECTORY = 2
-    FILE = 3
-
 class Directory:
     def __init__(self, current_directory=None):
         self.current_directory = current_directory
@@ -99,34 +94,9 @@ for line in terminal_output:
     instruction3 = line[2] if len(line) == 3 else ""
 
     # instruction1's value identifies if line is a terminal command, a directory, or a file.
+    # instruction2's value is a file name, directory name, or a terminal command.
     if instruction1 == "$":
-        # Terminal command.
-        cur_instruct = InstructionType.TERMINAL_OUTPUT
-    elif instruction1 == "dir":
-        # Directory.
-        cur_instruct = InstructionType.DIRECTORY
-    else:
-        # File.
-        cur_instruct = InstructionType.FILE
-
-    # instruction2 is a file name, directory name, or a terminal command.
-    if cur_instruct == InstructionType.FILE:
-        # Found a file; save its name and size.
-        print("Found new file.")
-        cur_dir.add_file(file_name=instruction2, file_size=instruction1)
-        print(f"cur_dir:\n{cur_dir}")
-    elif cur_instruct == InstructionType.DIRECTORY:
-        # Found a directory; save its name.
-        cur_dir.directories.append(instruction2)
-        child_dir = Directory(current_directory=instruction2)
-        if child_dir not in cur_dir.children:
-            print("Found new directory.")
-            child_dir.add_parent(cur_dir)
-            child_dir.current_directory = instruction2
-            cur_dir.add_child(child_dir)
-            print(f"cur_dir:\n{cur_dir}")
-    else:
-        # Terminal command.
+        # Found a terminal command.
         print("Found terminal command.")
         if instruction2 == "cd":
             # cur_dir.update_total_size()
@@ -156,6 +126,21 @@ for line in terminal_output:
         elif instruction2 == "ls":
             # Listing items in current directory.
             continue
+    elif instruction1 == "dir":
+        # Found a directory; save its name.
+        cur_dir.directories.append(instruction2)
+        child_dir = Directory(current_directory=instruction2)
+        if child_dir not in cur_dir.children:
+            print("Found new directory.")
+            child_dir.add_parent(cur_dir)
+            child_dir.current_directory = instruction2
+            cur_dir.add_child(child_dir)
+            print(f"cur_dir:\n{cur_dir}")
+    else:
+        # Found a file; save its name and size.
+        print("Found new file.")
+        cur_dir.add_file(file_name=instruction2, file_size=instruction1)
+        print(f"cur_dir:\n{cur_dir}")
 
 print(f"root\n{root}")
 
