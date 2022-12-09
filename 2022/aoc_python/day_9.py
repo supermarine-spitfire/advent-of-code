@@ -36,6 +36,9 @@ class Point2D:
     def __eq__(self, other) -> bool:
         return self.x == other.x and self.y == other.y
 
+    def __ne__(self, other) -> bool:
+        return not self.__eq__(other)
+
     def __hash__(self) -> int:
         return hash((self.x, self.y))
 
@@ -73,8 +76,8 @@ class Vector2D:
 
 print("Advent of Code 2022 Day 9")
 print("-------------------------")
-file_input = io.file_to_list("input/day-9-test-data.txt")
-# file_input = io.file_to_list("input/day-9-input.txt")
+# file_input = io.file_to_list("input/day-9-test-data.txt")
+file_input = io.file_to_list("input/day-9-input.txt")
 rope_head_moves = []
 
 for line in file_input:
@@ -84,112 +87,74 @@ origin = Point2D(0, 0)          # Map everything relative to this point.
 head_position = Point2D(0, 0)
 tail_position = Point2D(0, 0)   # Tail starts out overlapped by head.
 covered_positions = []
+max_x = 0
+max_y = 0
 for move in rope_head_moves:
-    print(f"covered_positions: {covered_positions}")
+    # print(f"move: {move}")
+    # print(f"covered_positions: {covered_positions}")
+    # print(f"current head position: {head_position}")
+    # print(f"current tail position: {tail_position}")
     direction = move[0]
     num_steps = int(move[1])
+    max_x = num_steps if direction == "U" and num_steps > max_x else max_x
+    max_y = num_steps if direction == "R" and num_steps > max_y else max_y
 
-    # Move the head.
-    if direction == "U":
-        # Moving up.
-        for i in range(num_steps):
+    for i in range(num_steps):
+        # Move the head.
+        previous_head_position = Point2D(head_position.x, head_position.y)
+        if direction == "U":
             head_position.y += 1
-            print(f"Moving head up: {head_position}")
-            if head_position.x == tail_position.x:
-                # Tail is directly above/below head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.euclidean_distance(tail_position) >= 2:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    tail_position.y += 1
-                    print(f"Moving tail up: {tail_position}")
-            elif head_position.y > tail_position.y:
-                # Tail is on a downward diagonal relative to head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.manhattan_distance(tail_position) >= 3:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    # Tail occupies original position of head.
-                    tail_position.x = head_position.x
-                    tail_position.y = head_position.y - 1
-                    print(f"Moving tail diagonally up to previous position of head: {tail_position}")
-            # Other possible tail positions (side-by-side with head, on upward diagonal relative to head)
-            # do not warrant updating its position.
-    elif direction == "D":
-        # Moving down.
-        for i in range(num_steps):
+            # print(f"Moving head up: {head_position}")
+        elif direction == "D":
             head_position.y -= 1
-            print(f"Moving head down: {head_position}")
-            if head_position.x == tail_position.x:
-                # Tail is directly above/below head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.euclidean_distance(tail_position) >= 2:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    tail_position.y -= 1
-                    print(f"Moving tail down: {tail_position}")
-            elif head_position.y < tail_position.y:
-                # Tail is on an upward diagonal relative to head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.manhattan_distance(tail_position) >= 3:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    # Tail occupies original position of head.
-                    tail_position.x = head_position.x
-                    tail_position.y = head_position.y + 1
-                    print(f"Moving tail diagonally down to previous position of head: {tail_position}")
-            # Other possible tail positions (side-by-side with head, on downward diagonal relative to head)
-            # do not warrant updating its position.
-    elif direction == "L":
-        # Moving left.
-        for i in range(num_steps):
+            # print(f"Moving head down: {head_position}")
+        elif direction == "L":
             head_position.x -= 1
-            print(f"Moving head left: {head_position}")
-            if head_position.y == tail_position.y:
-                # Tail is side-by-side with head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.euclidean_distance(tail_position) >= 2:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    tail_position.x -= 1
-                    print(f"Moving tail left: {tail_position}")
-            elif head_position.x < tail_position.x:
-                # Tail is on a rightward diagonal relative to head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.manhattan_distance(tail_position) >= 3:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    # Tail occupies original position of head.
-                    tail_position.y = head_position.y
-                    tail_position.x = head_position.x + 1
-                    print(f"Moving tail diagonally up to previous position of head: {tail_position}")
-            # Other possible tail positions (above/below head, on leftward diagonal relative to head)
-            # do not warrant updating its position.
-    elif direction == "R":
-        # Moving right.
-        for i in range(num_steps):
+            # print(f"Moving head left: {head_position}")
+        elif direction == "R":
             head_position.x += 1
-            print(f"Moving head right: {head_position}")
-            if head_position.y == tail_position.y:
-                # Tail is side-by-side with head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.euclidean_distance(tail_position) >= 2:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    tail_position.x += 1
-                    print(f"Moving tail right: {tail_position}")
-            elif head_position.x > tail_position.x:
-                # Tail is on a leftward diagonal relative to head.
-                # If statement checks if head and tail are touching or not.
-                if head_position.manhattan_distance(tail_position) >= 3:
-                    covered_positions.append(Point2D(tail_position.x, tail_position.y))
-                    # Tail occupies original position of head.
-                    tail_position.y = head_position.y
-                    tail_position.x = head_position.x - 1
-                    print(f"Moving tail diagonally up to previous position of head: {tail_position}")
-            # Other possible tail positions (above/below head, on rightward diagonal relative to head)
-            # do not warrant updating its position.
-    else:
-        continue    # Ignore any other input.
+            # print(f"Moving head right: {head_position}")
+        else:
+            continue    # Ignore any other input.
+        # print(f"Previous head position: {previous_head_position}")
 
-num_tail_positions_visited = len(set(covered_positions))
-# num_tail_positions_visited = len(covered_positions)
+        # Move the tail, if needed.
+        # The distance checks test if head and tail are touching or not. Tail moves if the test fails.
+        # The tail moves to the previous position of the head.
+        if head_position.euclidean_distance(tail_position) >= 2  \
+           or head_position.manhattan_distance(tail_position) >= 3:
+           # Euclidean distance handles cases where head and tail are in same rows/columns.
+           # Manhattan distance handles cases where head and tail are on diagonals.
+           if tail_position not in covered_positions:
+                covered_positions.append(Point2D(tail_position.x, tail_position.y))
+           tail_position = previous_head_position
+        #    print("Moving tail to previous head position.")
+        #    print(f"New tail position: {tail_position}")
+        #    print(f"covered_positions: {covered_positions}")
+        # print()
+
+if tail_position not in covered_positions:
+    covered_positions.append(tail_position) # Count the tail's position once the loop ends.
+
+print(f"covered_positions (final): {covered_positions}")
+print(f"max_x: {max_x}")
+print(f"max_y: {max_y}")
+# Print human-readable version of covered_positions.
+for i in range(max_y, -1, -1):  # Printing from top on down.
+    for j in range(max_x + 2):  # Add buffer at end of row.
+        cur_point = Point2D(j, i)
+        if cur_point == origin:
+            print("s", end=" ")
+        elif cur_point in covered_positions:
+            print("#", end=" ")
+        else:
+            print(".", end=" ")
+    print()
+
+num_tail_positions_visited = len(covered_positions)
 print("PART 1")
 print("======")
 print(f"Number of distinct positions visited by rope tail: {num_tail_positions_visited}")
 print("======")
 # Attempt 1: 8986 (too high)
-# Attempt 2: 
+# Attempt 2: 6266
