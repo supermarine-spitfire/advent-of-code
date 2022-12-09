@@ -24,6 +24,40 @@ class Point2D:
     __repr__ = __str__
 
 
+class Vector2D:
+    def __init__(self, start, end):
+        self.start = Point2D(start.x, end.y)
+        self.end = Point2D(end.x, end.y)
+
+    def add(self, v):
+        # Assumes vectors are defined using the same coordinate system.
+        new_end = Point2D(self.end)
+        new_end.x += v.end.x
+        new_end.y += v.end.y
+        return Vector2D(self.start, new_end)
+
+    def subtract(self, v):
+        # Assumes vectors are defined using the same coordinate system.
+        new_end = Point2D(self.end)
+        new_end.x -= v.end.x
+        new_end.y -= v.end.y
+        return Vector2D(self.start, new_end)
+
+    def scalar_multiplication(self, c):
+        scaled_vector = Vector2D(self.start, self.end)
+        scaled_vector.start.x *= c
+        scaled_vector.start.y *= c
+        scaled_vector.end.x *= c
+        scaled_vector.end.y *= c
+        return scaled_vector
+
+    def euclidean_distance(self) -> float:
+        return sqrt(pow(self.end.x - self.start.x, 2) + pow(self.end.y - self.start.y, 2))
+
+    def manhattan_distance(self) -> float:
+        return abs(self.end.x - self.start.x, 2) + abs(self.end.y - self.start.y, 2)
+
+
 print("Advent of Code 2022 Day 9")
 print("-------------------------")
 file_input = io.file_to_list("input/day-9-test-data.txt")
