@@ -6,6 +6,27 @@ class Point2D:
         self.x = x
         self.y = y
 
+    def add(self, x, y):
+        return Point2D(self.x + x, self.y + y)
+
+    def add_x(self, x):
+        return self.add(self.x + x, 0)
+
+    def add_y(self, y):
+        return self.add(0, self.y + y)
+
+    def subtract(self, x, y):
+        return Point2D(self.x - x, self.y - y)
+
+    def subtract_x(self, x):
+        return self.add(self.x - x, 0)
+
+    def subtract_y(self, y):
+        return self.add(0, self.y - y)
+
+    def scale(self, c):
+        return Point2D(self.x * c, self.y * c)
+
     def euclidean_distance(self, p) -> float:
         return sqrt(pow(p.x - self.x, 2) + pow(p.y - self.y, 2))
 
@@ -31,24 +52,16 @@ class Vector2D:
 
     def add(self, v):
         # Assumes vectors are defined using the same coordinate system.
-        new_end = Point2D(self.end)
-        new_end.x += v.end.x
-        new_end.y += v.end.y
+        new_end = self.end.add(v.end.x, v.end.y)
         return Vector2D(self.start, new_end)
 
     def subtract(self, v):
         # Assumes vectors are defined using the same coordinate system.
-        new_end = Point2D(self.end)
-        new_end.x -= v.end.x
-        new_end.y -= v.end.y
+        new_end = self.end.subtract(v.end.x, v.end.y)
         return Vector2D(self.start, new_end)
 
     def scalar_multiplication(self, c):
-        scaled_vector = Vector2D(self.start, self.end)
-        scaled_vector.start.x *= c
-        scaled_vector.start.y *= c
-        scaled_vector.end.x *= c
-        scaled_vector.end.y *= c
+        scaled_vector = Vector2D(self.start.scale(c), self.end.scale(c))
         return scaled_vector
 
     def euclidean_distance(self) -> float:
