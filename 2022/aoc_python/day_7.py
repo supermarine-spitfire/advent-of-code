@@ -96,7 +96,7 @@ class Directory:
                 # print(f"child_size >= lower_limit: {child_size >= lower_limit}")
                 # print(f"child_size > smallest_size: {child_size > smallest_size}")
 
-                if child_size >= lower_limit:
+                if child_size >= lower_limit and child_size < smallest_size:
                     # print("Updating smallest_size.")
                     # print(f"{child_size} < {smallest_size} and > {lower_limit}.")
                     smallest_size = child_size
@@ -125,9 +125,9 @@ size of contents: {self.get_size_of_contents()}
 
 print("Advent of Code 2022 Day 7")
 print("-------------------------")
-terminal_output = io.file_to_list("input/day-7-test-data.txt")
+# terminal_output = io.file_to_list("input/day-7-test-data.txt")
 # terminal_output = io.file_to_list("input/day-7-test-data-2.txt")
-# terminal_output = io.file_to_list("input/day-7-input.txt")
+terminal_output = io.file_to_list("input/day-7-input.txt")
 terminal_output = [s.split(" ") for s in terminal_output]
 
 # Identify all files and directories, along with their sizes.
@@ -215,3 +215,4 @@ print(f"Minimum additional free disk space required for update: {minimum_disk_sp
 print(f"Smallest size of directory to delete: {dir_to_delete_size}")
 print("======")
 # Attempt 1: 6721126 (too high)
+# Attempt 2: 4978279
