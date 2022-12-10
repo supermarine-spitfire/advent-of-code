@@ -80,6 +80,7 @@ def calculate_moves(head_position, tail_position, direction):
 
 
 def print_tail_positions(max_x, max_y, covered_positions):
+    origin = Point2D(0, 0)          # Map everything relative to this point.
     for i in range(max_y, -1, -1):  # Printing from top on down.
         for j in range(max_x + 2):  # Add buffer at end of row.
             cur_point = Point2D(j, i)
@@ -95,14 +96,13 @@ def print_tail_positions(max_x, max_y, covered_positions):
 print("Advent of Code 2022 Day 9")
 print("-------------------------")
 # file_input = io.file_to_list("input/day-9-test-data.txt")
-file_input = io.file_to_list("input/day-9-test-data-2.txt")
-# file_input = io.file_to_list("input/day-9-input.txt")
+# file_input = io.file_to_list("input/day-9-test-data-2.txt")
+file_input = io.file_to_list("input/day-9-input.txt")
 rope_head_moves = []
 
 for line in file_input:
     rope_head_moves.append(line.split(" "))
 
-origin = Point2D(0, 0)          # Map everything relative to this point.
 head_position = Point2D(0, 0)
 tail_position = Point2D(0, 0)   # Tail starts out overlapped by head.
 covered_positions = []
@@ -140,24 +140,51 @@ print("======")
 # max_y = 0
 covered_positions.clear()
 rope_knots = [Point2D(0, 0) for i in range(10)] # Make a ten-knot rope.
+tail_position = Point2D(rope_knots[-1].x, rope_knots[-1].y)    # Final element is tail of rope.
 tail_index = len(rope_knots) - 1
 for move in rope_head_moves:
+    # print(f"move: {move}")
     direction = move[0]
     num_steps = int(move[1])
+    # print(f"num_steps: {num_steps}")
     # max_x = num_steps if direction == "U" and num_steps > max_x else max_x
     # max_y = num_steps if direction == "R" and num_steps > max_y else max_y
+    extra_loop = num_steps >= len(rope_knots)
     for i in range(num_steps):
+        # print(f"Step {i + 1} of {num_steps}.")
         j = 0
-        while j < tail_index:   # Stops one knot ahead of the rope's tail.
+        while j < i:   # If the head moves n steps, the next n knots move in sequence.
+            if j + 1 > tail_index:
+                # Reached end of the rope, but the head still needs to move a few more steps.
+                num_steps -= j + 1
+                break
             cur_head = rope_knots[j]
             cur_tail = rope_knots[j + 1]
+            # print(f"rope_knots before move: {rope_knots}")
+            # print(f"Head before move ({j}): {cur_head}")
+            # print(f"Tail before move ({j + 1}): {cur_tail}")
             cur_head, cur_tail = calculate_moves(head_position=cur_head, tail_position=cur_tail, direction=direction)
+            tail_position = Point2D(cur_tail.x, cur_tail.y)
+            # print(f"rope_knots after move: {rope_knots}")
+            # print(f"Head after move ({j}): {cur_head}")
+            # print(f"Tail after move ({j + 1}): {cur_tail}")
 
             if j + 1 == tail_index and cur_tail not in covered_positions:
+                # print(f"Tail position: {cur_tail}")
                 # cur_tail is the tail of the rope; record its current position if new.
                 covered_positions.append(Point2D(cur_tail.x, cur_tail.y))
 
             j += 1
+            # print()
+
+    if extra_loop:
+        for i in range(num_steps):
+            # Move entire rope however many steps left the head has to take.
+            cur_head, cur_tail = calculate_moves(head_position=cur_head, tail_position=cur_tail, direction=direction)
+            tail_position = Point2D(cur_tail.x, cur_tail.y)
+
+if tail_position not in covered_positions:
+    covered_positions.append(tail_position) # Count the tail's position once the loop ends.
 
 print(f"covered_positions (final): {covered_positions}")
 num_tail_positions_visited = len(covered_positions)
@@ -165,3 +192,4 @@ print("PART 2")
 print("======")
 print(f"Number of distinct positions visited by rope tail: {num_tail_positions_visited}")
 print("======")
+# Attempt 1: 1106 (too low)
