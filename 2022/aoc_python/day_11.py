@@ -8,7 +8,7 @@ class Monkey:
     def __init__(self, starting_items, operation, divisibility_condition, true_target, false_target):
         self.items = queue.Queue()
         for item in starting_items:
-            self.items.put(item, block=False)
+            self.items.put(item)
 
         self.operation = operation
         self.divisible_by = divisibility_condition
@@ -27,14 +27,15 @@ class Monkey:
     def inspect_item(self):
         # print("In inspect_item().")
         # Get first item.
-        self.current_worry_level = self.items.get(block=False)
+        self.current_worry_level = self.items.get()
         self.current_worry_level = self.__operation__(self.current_worry_level)
         self.num_inspections += 1
 
-    def throw_item(self):
+    def throw_item(self, relief_function):
         # print("In throw_item().")
-        # Worry level first decreases.
-        self.current_worry_level = math.floor(self.current_worry_level / 3)
+        # Worry level first decreases, if applicable.
+        if relief_function:
+            self.current_worry_level = relief_function(self.current_worry_level)
 
         # Once decrease happens, monkey throws it to another monkey.
         if self.current_worry_level % self.divisible_by == 0:
@@ -44,7 +45,7 @@ class Monkey:
 
     def catch_item(self, item):
         # print("In catch_item().")
-        self.items.put(item, block=False)
+        self.items.put(item)
 
     def __str__(self) -> str:
         return f"""Carried items: {self.items}
