@@ -6,55 +6,55 @@ from enum import Enum
 
 
 class Vertex:
-        class Colour(Enum):
-            # Used for breadth-first search.
-            BLACK = 0   # Discovered vertex.
-            GREY = 1    # "Frontier" between discovered and undiscovered vertices.
-            WHITE = 2   # Undiscovered vertex.
+    class Colour(Enum):
+        # Used for breadth-first search.
+        BLACK = 0   # Discovered vertex.
+        GREY = 1    # "Frontier" between discovered and undiscovered vertices.
+        WHITE = 2   # Undiscovered vertex.
 
-        def __init__(self, label, data):
-            self.label = label
-            self.data = data
+    def __init__(self, label, data):
+        self.label = label
+        self.data = data
 
-            self.predecessor = None # Reference to another Vertex; used for graph searches.
-            self.colour = None      # Label used for graph searches.
-            self.distance = None    # Tracks smallest number of edges from a source Vertex to self.
+        self.predecessor = None # Reference to another Vertex; used for graph searches.
+        self.colour = None      # Label used for graph searches.
+        self.distance = None    # Tracks smallest number of edges from a source Vertex to self.
 
-        def __hash__(self) -> int:
-            return hash(self.label)
+    def __hash__(self) -> int:
+        return hash(self.label)
 
-        def __eq__(self, other) -> bool:
-            if isinstance(other, Vertex):
-                return self.label == other.label
-            return False
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Vertex):
+            return self.label == other.label
+        return False
 
-        def __ne__(self, other) -> bool:
-            return not self.__eq__(other)
+    def __ne__(self, other) -> bool:
+        return not self.__eq__(other)
 
-        def __lt__(self, other) -> bool:
-            if isinstance(other, Vertex):
-                return self.label < other.label
-            return False
-        
-        def __le__(self, other) -> bool:
-            return self.__lt__(other) or self.__eq__(other)
+    def __lt__(self, other) -> bool:
+        if isinstance(other, Vertex):
+            return self.label < other.label
+        return False
 
-        def __gt__(self, other) -> bool:
-            if isinstance(other, Vertex):
-                return self.label > other.label
-            return False
+    def __le__(self, other) -> bool:
+        return self.__lt__(other) or self.__eq__(other)
 
-        def __ge__(self, other) -> bool:
-            return self.__gt__(other) or self.__eq__(other)
+    def __gt__(self, other) -> bool:
+        if isinstance(other, Vertex):
+            return self.label > other.label
+        return False
 
-        def __str__(self) -> str:
-            return   f"Vertex(label: {self.label}, data: {self.data}, " \
-                   + f"predecessor: ({self.predecessor.label if self.predecessor else None}, " \
-                   + f"{self.predecessor.data if self.predecessor else None}), " \
-                   + f"colour: {self.colour if self.colour else None}, " \
-                   + f"distance: {self.distance if self.distance else None})"
+    def __ge__(self, other) -> bool:
+        return self.__gt__(other) or self.__eq__(other)
 
-        __repr__ = __str__
+    def __str__(self) -> str:
+        return   f"Vertex(label: {self.label}, data: {self.data}, " \
+               + f"predecessor: ({self.predecessor.label if self.predecessor else None}, " \
+               + f"{self.predecessor.data if self.predecessor else None}), " \
+               + f"colour: {self.colour}, " \
+               + f"distance: {self.distance})"
+
+    __repr__ = __str__
 
 
 class Graph:
@@ -110,44 +110,49 @@ class Graph:
 
     def bfs(self, source):
         # Implements breadth-first search.
-        print("In Graph.bfs().")
-        print(self)
+        # print("In Graph.bfs().")
+        # print(f"self before initialisation: {self}")
         if not self.vertex_in_graph(source.label):
             return False
 
-        vertices = self.vertices.copy()
-        vertices.remove(source)
-        for v in vertices:
+        for v in self.vertices:
             v.colour = Vertex.Colour.WHITE  # Unvisited.
             v.distance = sys.maxsize        # Effectively infinitely far from source.
             v.predecessor = None
             # print(f"v: {v}")
-        print(f"vertices: {sorted(vertices)}")
+        vertices = self.vertices.copy()
+        vertices.remove(source)
+        # print(f"vertices: {sorted(vertices)}")
+        # print(f"self after initialisation: {self}")
 
         source.colour = Vertex.Colour.GREY  # Visited by default; has neighbouring unvisited vertices.
         source.distance = 0
         source.predecessor = None
-        print(f"source: {source}\n")
+        # print(f"source: {source}\n")
 
         vertices_to_process = deque()
         vertices_to_process.append(source)
         while vertices_to_process:
-            print(f"vertices_to_process: {vertices_to_process}")
+            # print(f"vertices_to_process (before loop): {vertices_to_process}")
             u = vertices_to_process.popleft()
-            print(f"u: {u}")
-            for v in self.neighbours(u):
-                print(f"v (neighbour of u): {v}")
+            # print(f"u: {u}")
+            neighbours = self.neighbours(u)
+            # print(f"neighbours: {neighbours}")
+            for v in neighbours:
+                # print(f"v (neighbour of u): {v}")
+                # print(f"v.colour: {v.colour}")
                 if v.colour == Vertex.Colour.WHITE: # v has not been visited yet.
                     v.colour = Vertex.Colour.GREY   # Add to frontier; there may be neighbouring unvisited vertices.
                     v.distance = u.distance + 1
                     v.predecessor = u
-                    print(f"v discovered: {v}. Will process.")
+                    # print(f"v discovered: {v}. Will process.")
                     vertices_to_process.append(v)
             u.colour = Vertex.Colour.BLACK          # All neighbouring vertices have been visited.
-            print(f"All neighbours of {u} discovered.\n")
-        print("Vertices after search:")
-        for v in sorted(self.vertices):
-            print(f"v: {v}")
+            # print(f"All neighbours of {u} discovered.")
+            # print(f"vertices_to_process (after loop): {vertices_to_process}\n")
+        # print("Vertices after search:")
+        # for v in sorted(self.vertices):
+            # print(f"v: {v}")
 
         return True
 
@@ -157,26 +162,26 @@ class DirectedGraph(Graph):
         super().__init__()
 
     def add_vertex(self, v):
-        # Returns boolean flag indicating if operation succeeded or not.
+        # Returns the original vertex or a reference to a copy of it already in the graph, if present.
         if v not in self.vertices:
             self.adjacency_lists[v]= set()
             self.vertices.append(v)
-            return True
+            return v
         else:
-            return False
+            return self.vertices[self.vertices.index(v)]
 
     def remove_vertex(self, v):
         # Returns boolean flag indicating if operation succeeded or not.
         if v in self.vertices:
             del self.adjacency_lists[v]
             self.vertices.remove(v)
-            return True
+            return v
         else:
             return False
 
     def add_edge(self, source, target):
         # Returns boolean flag indicating if operation succeeded or not.
-        if source not in self.vertices:
+        if source not in self.vertices or target not in self.vertices:
             return False
         elif source in self.adjacency_lists.keys():
             self.adjacency_lists[source].add(target)

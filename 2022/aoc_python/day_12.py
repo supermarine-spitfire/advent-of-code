@@ -4,7 +4,7 @@ from lib.collections import DirectedGraph, Vertex
 print("Advent of Code 2022 Day 12")
 print("-------------------------")
 
-testing = True
+testing = False
 if testing:
     height_map_string = io.file_to_string("input/day-12-test-data.txt")
     height_map = io.file_to_list("input/day-12-test-data.txt")
@@ -46,17 +46,27 @@ def is_traversable(start_char, end_char):
 def connect_squares(graph, starting_square, ending_square):
     # print("In connect_squares().")
     if ending_square:
-        graph.add_vertex(ending_square)
+        ending_square = graph.add_vertex(ending_square)
         edge_type = is_traversable(starting_square.data, ending_square.data)
         if edge_type == 1:
-            # print(f"Making edges in both directions between {starting_square} and {ending_square}.")
             # Connect starting_square and ending_square in both directions.
-            graph.add_edge(starting_square, ending_square)
-            graph.add_edge(ending_square, starting_square)
+            status = graph.add_edge(starting_square, ending_square)
+            # if status:
+            #     print(f"Made edge from {starting_square} to {ending_square}.")
+            # else:
+            #     print(f"Failed to make edge from {starting_square} to {ending_square}.")
+            status = graph.add_edge(ending_square, starting_square)
+            # if status:
+            #     print(f"Made edge from {ending_square} to {starting_square}.")
+            # else:
+            #     print(f"Failed to make edge from {ending_square} to {starting_square}")
         elif edge_type == 0:
-            # print(f"Making edge from {starting_square} to {ending_square}.")
-            # Only connect starting_square to ending_square
-            graph.add_edge(starting_square, ending_square)
+            # Only connect starting_square to ending_square.
+            status = graph.add_edge(starting_square, ending_square)
+            # if status:
+            #     print(f"Made edge from {starting_square} to {ending_square}.")
+            # else:
+            #     print(f"Failed to make edge from {starting_square} to {ending_square}.")
         elif edge_type == -1:
             pass
 
@@ -71,7 +81,7 @@ for i in range(len(height_map)):
         # print(f"height_map[{i}][{j}]: {height_map[i][j]}")
         cur_square = Vertex(num_cols * i + j, height_map[i][j])
         # print(f"cur_square: {cur_square}")
-        accessible_areas.add_vertex(cur_square)
+        cur_square = accessible_areas.add_vertex(cur_square)
 
         # Check each of height_map[i][j]'s neighbours.
         # If neighbour is accessible, add it to the graph.
@@ -107,11 +117,16 @@ for i in range(len(height_map)):
 # Run shortest path algorithm on graph from S to E.
 current_position = accessible_areas.get_vertex(height_map_string.replace("\n", "").find("S"))
 destination = accessible_areas.get_vertex(height_map_string.replace("\n", "").find("E"))
-print(f"current_position (before search): {current_position}")
-print(f"destination (before search): {destination}")
+# print(f"\ncurrent_position (before search): {current_position}")
+# print(f"destination (before search): {destination}")
 accessible_areas.bfs(current_position)
-path = []
-accessible_areas.get_path(current_position, destination, path)
-print(f"current_position (after search): {current_position}")
-print(f"destination (after search): {destination}")
-print(f"path: {path}")
+# path = []
+# accessible_areas.get_path(current_position, destination, path)
+# print(f"\ncurrent_position (after search): {current_position}")
+# print(f"destination (after search): {destination}")
+# print(f"path: {path}")
+print("PART 1")
+print("======")
+print(f"Shortest number of steps from current position to destination: {destination.distance}")
+print("======")
+# Attempt 1: 423
