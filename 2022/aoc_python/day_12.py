@@ -6,11 +6,11 @@ print("-------------------------")
 
 testing = False
 if testing:
-    height_map_string = io.file_to_string("input/day-12-test-data.txt")
+    height_map_string = io.file_to_string("input/day-12-test-data.txt").replace("\n", "")
     height_map = io.file_to_list("input/day-12-test-data.txt")
     num_rows, num_cols = io.file_dimensions("input/day-12-test-data.txt")
 else:
-    height_map_string = io.file_to_string("input/day-12-input.txt")
+    height_map_string = io.file_to_string("input/day-12-input.txt").replace("\n", "")
     height_map = io.file_to_list("input/day-12-input.txt")
     num_rows, num_cols = io.file_dimensions("input/day-12-input.txt")
 # print(f"File dimensions: {num_rows}, {num_cols}")
@@ -115,8 +115,8 @@ for i in range(len(height_map)):
 # print(accessible_areas)
 
 # Run shortest path algorithm on graph from S to E.
-current_position = accessible_areas.get_vertex(height_map_string.replace("\n", "").find("S"))
-destination = accessible_areas.get_vertex(height_map_string.replace("\n", "").find("E"))
+current_position = accessible_areas.get_vertex(height_map_string.find("S"))
+destination = accessible_areas.get_vertex(height_map_string.find("E"))
 # print(f"\ncurrent_position (before search): {current_position}")
 # print(f"destination (before search): {destination}")
 accessible_areas.bfs(current_position)
@@ -130,3 +130,27 @@ print("======")
 print(f"Shortest number of steps from current position to destination: {destination.distance}")
 print("======")
 # Attempt 1: 423
+
+accessible_areas.reset_vertices()
+low_points = []
+index = 0
+for c in height_map_string:
+    if c == "a":
+        low_points.append(index)
+    index += 1
+print(f"low_points: {low_points}")
+
+steps_to_destination = []
+for low_point in low_points:
+    current_position = accessible_areas.get_vertex(low_point)
+    accessible_areas.bfs(current_position)
+    # print(f"destination: {destination}")
+    steps_to_destination.append(destination.distance)
+    accessible_areas.reset_vertices()
+steps_to_destination.sort()
+
+print("PART 2")
+print("======")
+print(f"Shortest number of steps from current position to destination: {steps_to_destination[0]}")
+print("======")
+# Attempt 1: 416
