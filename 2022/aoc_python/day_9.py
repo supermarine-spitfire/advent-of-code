@@ -158,7 +158,7 @@ for line in file_input:
     rope_head_moves.append(line.split(" "))
 
 head_position = Point2D(0, 0)
-last_updated_knot = Point2D(0, 0)   # Tail starts out overlapped by head.
+tail_position = Point2D(0, 0)   # Tail starts out overlapped by head.
 covered_positions = []
 # max_x = 0
 # max_y = 0
@@ -169,17 +169,31 @@ for move in rope_head_moves:
     # max_y = num_steps if direction == "R" and num_steps > max_y else max_y
 
     for i in range(num_steps):
-        head_position, last_updated_knot = calculate_moves(
+        # head_position, tail_position = calculate_moves(
+        #     head_position=head_position,
+        #     tail_position=tail_position,
+        #     direction=direction,
+        #     use_old_implementation=True
+        # )
+        # if tail_position not in covered_positions:
+        #     covered_positions.append(Point2D(tail_position.x, tail_position.y))
+        # Move head.
+        direction = calculate_moves(
             head_position=head_position,
-            tail_position=last_updated_knot,
+            tail_position=tail_position,
             direction=direction,
-            use_old_implementation=True
+            use_old_implementation=False
         )
-        if last_updated_knot not in covered_positions:
-            covered_positions.append(Point2D(last_updated_knot.x, last_updated_knot.y))
+        # Move tail.
+        calculate_moves(
+            head_position=tail_position,
+            tail_position=None,
+            direction=direction,
+            use_old_implementation=False
+        )
 
-if last_updated_knot not in covered_positions:
-    covered_positions.append(last_updated_knot) # Count the tail's position once the loop ends.
+        if tail_position not in covered_positions:
+            covered_positions.append(tail_position) # Count the tail's position once the loop ends.
 
 # print(f"covered_positions (final): {covered_positions}")
 # print(f"max_x: {max_x}")
