@@ -11,19 +11,19 @@ class Direction(Enum):
 
 def free_to_move(sand, walls, placed_sand):
     def is_free(point):
-        print("In is_free().")
-        print(f"point: {point}")
+        # print("In is_free().")
+        # print(f"point: {point}")
         # Check if it hits a wall.
         for wall in walls:
-            print(f"wall: {wall}")
+            # print(f"wall: {wall}")
             if wall.intersects(point):
                 return False
 
         # Check if it hits placed sand.
         for ps in placed_sand:
-            print(f"ps: {ps}")
-            if ps.is_touching(point):
-                False
+            # print(f"ps: {ps}")
+            if ps == point:
+                return False
         return True
 
     # First check if the point directly down is free.
@@ -38,7 +38,7 @@ def free_to_move(sand, walls, placed_sand):
     else:
         return Direction.BLOCKED
 
-testing = True
+testing = False
 if testing:
     cave_scan = io.file_to_list("input/day-14-test-data.txt")
 else:
@@ -81,7 +81,7 @@ while can_rest:
     direction = Direction.DOWN
     while direction != Direction.BLOCKED:
         direction = free_to_move(sand, cave_walls, placed_sand_units)
-        print(f"direction: {direction}")
+        # print(f"direction: {direction}")
         if direction == Direction.DOWN:
             sand.y += 1
         elif direction == Direction.LEFT:
@@ -91,10 +91,11 @@ while can_rest:
             sand.x += 1
             sand.y += 1
 
-        print(f"sand.y: {sand.y}")
+        # print(f"sand.y: {sand.y}")
         if sand.y > max_y:
             # Sand is falling into the abyss; terminate.
             can_rest = False
+            break
 
     if can_rest:
         placed_sand_units.append(sand)
@@ -103,3 +104,4 @@ print("PART 1")
 print("======")
 print(f"Maximum number of sand units deposited before excess flows over: {len(placed_sand_units)}")
 print("======")
+# Attempt 1: 698

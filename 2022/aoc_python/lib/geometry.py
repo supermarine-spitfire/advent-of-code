@@ -31,32 +31,19 @@ class Point2D:
 
 class LineSegment2D:
     def __init__(self, start, end):
-        self.start = start
-        self.end = end
+        # Constructor enforces the condition that small is strictly less than end.
+        self.start = Point2D(min(start.x, end.x), min(start.y, end.y))
+        self.end = Point2D(max(start.x, end.x), max(start.y, end.y))
 
     def __str__(self):
         return f"Line2D(start: {self.start}, end: {self.end}"
 
     def intersects(self, p):
-        if p.x < self.start.x or p.x > self.end.y or p.y < self.start.y or p.y > self.end.y: # Outside of line segment.
-            return False
-        if p == self.start or p == self.end:    # Same as endpoints.
-            return True
-        elif p.x == self.start.x and p.y >= self.start.y and p.y <= self.end.y:   # Vertical case.
+        # Assumes only horizontal and vertical line segments.
+        if p.x == self.start.x and p.y >= self.start.y and p.y <= self.end.y:   # Vertical case.
             return True
         elif p.y == self.start.y and p.x >= self.start.x and p.x <= self.end.x: # Horizontal case.
             return True
-        else:                                                                   # Oblique case.
-            if self.start.y == self.end.y:
-                m = 0
-            elif self.start.x == self.end.x:
-                m = None
-            else:
-                m = (self.end.x - self.start.x) / (self.end.y - self.start.y)
-
-            if m:
-                return p.y - self.start.y == m * (p.x - self.start.x)
-            else:
-                return None # Should not happen.
+        return False
 
     __repr__ = __str__
