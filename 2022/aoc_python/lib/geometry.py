@@ -6,6 +6,9 @@ class Point2D:
     def __str__(self):
         return f"Point2D({self.x}, {self.y})"
 
+    def __hash__(self):
+        return hash((self.x, self.y))
+
     def __eq__(self, other):
         if isinstance(other, Point2D):
             return self.x == other.x and self.y == other.y
@@ -36,7 +39,7 @@ class LineSegment2D:
         self.end = Point2D(max(start.x, end.x), max(start.y, end.y))
 
     def __str__(self):
-        return f"Line2D(start: {self.start}, end: {self.end}"
+        return f"Line2D(start: {self.start}, end: {self.end})"
 
     def intersects(self, p):
         # Assumes only horizontal and vertical line segments.
