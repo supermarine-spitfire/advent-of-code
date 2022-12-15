@@ -101,3 +101,46 @@ print("======")
 # Attempt 1: 698
 # Time trial 1: 52.2 s
 # Time trial 2: 0.4 s
+
+# Start pouring sand from point (500, 0).
+# Loop as long as the sand source is unblocked.
+can_pour = True
+placed_sand_units = set()
+max_y += 2  # Bottom of cave is two units higher than previous measurement.
+while can_pour:
+    sand = Point2D(500, 0)
+    direction = Direction.DOWN
+    while direction != Direction.BLOCKED:
+        direction = free_to_move(sand, cave_walls, placed_sand_units)
+        # print(f"direction: {direction}")
+        if direction == Direction.DOWN:
+            sand.y += 1
+        elif direction == Direction.LEFT:
+            sand.x -= 1
+            sand.y += 1
+        elif direction == Direction.RIGHT:
+            sand.x += 1
+            sand.y += 1
+
+        # print(f"sand.y: {sand.y}")
+        # print(f"max_y: {max_y}")
+        if sand.y > max_y - 1:
+            # Sand hit the bottom of the cave; terminate.
+            # print("Hit bottom of cave.")
+            sand.y -= 1 # The sand's resting place is on the cave bottom, not in it.
+            break
+
+    # print(f"sand: {sand}")
+    if can_pour:
+        placed_sand_units.add(sand)
+
+    # Check if source is blocked.
+    if free_to_move(Point2D(500, 0), cave_walls, placed_sand_units) == Direction.BLOCKED:
+        placed_sand_units.add(Point2D(500, 0))  # The sand unit at the source counts as being placed.
+        can_pour = False
+
+print("PART 2")
+print("======")
+print(f"Maximum number of sand units deposited before sand source is blocked: {len(placed_sand_units)}")
+print("======")
+# Attempt 1: 28594
