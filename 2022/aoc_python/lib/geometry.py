@@ -30,6 +30,9 @@ class Point2D:
 
         return False
 
+    def manhattan_distance(self, p):
+        return abs(self.x - p.x) + abs(self.y - p.y)
+
     __repr__ = __str__
 
 class LineSegment2D:
