@@ -34,29 +34,68 @@ Closest beacon: {self.closest_beacon} ({self.sensor_range} units away)
         return self.location.manhattan_distance(p) <= self.sensor_range
 
     def get_detectable_points(self):
+        def get_range(lower_bound, upper_bound, upper_to_lower):
+            # This function guarantees a non-empty range.
+            # reverse_order = True means count from upper_bound to lower_bound.
+            if lower_bound > 0 and upper_bound > 0:
+                # Case 1: both positive.
+                if upper_to_lower:
+                    return range(upper_bound, lower_bound, -1)
+                else:
+                    return range(lower_bound, upper_bound)
+            elif lower_bound < 0 and upper_bound >= 0:
+                # Case 2: lower_bound negative, upper_bound positive.
+                if upper_to_lower:
+                    return range(upper_bound, lower_bound, -1)
+                else:
+                    return range(lower_bound, upper_bound)
+            elif upper_bound < 0 and lower_bound >= 0:
+                # Case 3: upper_bound negative, lower_bound positive.
+                if upper_to_lower:
+                    return range(upper_bound, lower_bound)
+                else:
+                    return range(lower_bound, upper_bound, -1)
+            elif lower_bound < 0 and upper_bound < 0 and abs(lower_bound) > abs(upper_bound):
+                # Case 4: both negative with lower_bound having a greater absolute value than upper_bound.
+                if upper_to_lower:
+                    return range(upper_bound, lower_bound, -1)
+                else:
+                    return range(lower_bound, upper_bound)
+            elif lower_bound < 0 and upper_bound < 0 and abs(upper_bound) > abs(lower_bound):
+                # Case 5: both negative with upper_bound having a greater absolute value than lower_bound.
+                return range(lower_bound, upper_bound, -1)
+            else:
+                # Case 6: both equal.
+                return range(lower_bound, upper_bound)
+
+
         detectable_points = set()
         # Sensor area consists of two triangles with their bases touching.
         # Go from base to tip in each loop.
         print("Making top half of range.")
+        print(f"self.sensor_range - 1: {self.sensor_range - 1}")
+        print(f"self.location.y - self.sensor_range - 1: {self.location.y - self.sensor_range - 1}")
         for row in range(self.sensor_range - 1, self.location.y - self.sensor_range - 1, -1):
             # Construct top half of range.
             x_lower_bound = self.location.x - self.sensor_range - row
             x_upper_bound = self.location.x + self.sensor_range + row + 1
-            for col in range(max(x_lower_bound, x_upper_bound), min(x_lower_bound, x_upper_bound)):
+            for col in get_range(x_lower_bound, x_upper_bound):
                 print(f"({row}, {col})")
                 detectable_points.add(Point2D(row, col))
         print("Making dividing line of range.")
         for row in range(self.location.x - self.sensor_range, self.location.x + self.sensor_range + 1):
-            print(f"({row}, {self.location.y})")
+            # print(f"({row}, {self.location.y})")
             # Construct dividing line of range.
             detectable_points.add(Point2D(row, self.location.y))
         print("Making bottom half of range.")
+        # print(f"self.sensor_range + 1: {self.sensor_range + 1}")
+        # print(f"self.location.y + self.sensor_range + 1: {self.location.y + self.sensor_range + 1}")
         for row in range(self.sensor_range + 1, self.location.y + self.sensor_range + 1):
             # Construct bottom half of range.
             x_lower_bound = self.location.x - self.sensor_range - row
             x_upper_bound = self.location.x + self.sensor_range + row + 1
-            for col in range(max(x_lower_bound, x_upper_bound), min(x_lower_bound, x_upper_bound)):
-                print(f"({row}, {col})")
+            for col in get_range(x_lower_bound, x_upper_bound):
+                # print(f"({row}, {col})")
                 detectable_points.add(Point2D(row, col))
 
         return detectable_points
@@ -103,7 +142,7 @@ for line in beacon_sensor_data:
     )
 
 for s in sensors:
-    print("Current sensor:")
+    print("\nCurrent sensor:")
     print(s)
     s.get_detectable_points()
 max_sensor_range = reduce(lambda s, t: s if s.sensor_range > t.sensor_range else t, sensors).sensor_range
