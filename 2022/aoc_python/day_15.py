@@ -33,8 +33,35 @@ Closest beacon: {self.closest_beacon} ({self.sensor_range} units away)
     def is_in_range(self, p):
         return self.location.manhattan_distance(p) <= self.sensor_range
 
+    def get_detectable_points(self):
+        detectable_points = set()
+        # Sensor area consists of two triangles with their bases touching.
+        # Go from base to tip in each loop.
+        print("Making top half of range.")
+        for row in range(self.sensor_range - 1, self.location.y - self.sensor_range - 1, -1):
+            # Construct top half of range.
+            x_lower_bound = self.location.x - self.sensor_range - row
+            x_upper_bound = self.location.x + self.sensor_range + row + 1
+            for col in range(max(x_lower_bound, x_upper_bound), min(x_lower_bound, x_upper_bound)):
+                print(f"({row}, {col})")
+                detectable_points.add(Point2D(row, col))
+        print("Making dividing line of range.")
+        for row in range(self.location.x - self.sensor_range, self.location.x + self.sensor_range + 1):
+            print(f"({row}, {self.location.y})")
+            # Construct dividing line of range.
+            detectable_points.add(Point2D(row, self.location.y))
+        print("Making bottom half of range.")
+        for row in range(self.sensor_range + 1, self.location.y + self.sensor_range + 1):
+            # Construct bottom half of range.
+            x_lower_bound = self.location.x - self.sensor_range - row
+            x_upper_bound = self.location.x + self.sensor_range + row + 1
+            for col in range(max(x_lower_bound, x_upper_bound), min(x_lower_bound, x_upper_bound)):
+                print(f"({row}, {col})")
+                detectable_points.add(Point2D(row, col))
 
-testing = False
+        return detectable_points
+
+testing = True
 if testing:
     beacon_sensor_data = io.file_to_list("input/day-15-test-data.txt")
     row_to_search = 10
@@ -74,26 +101,35 @@ for line in beacon_sensor_data:
             closest_beacon=Point2D(beacon_coords[0], beacon_coords[1])
         )
     )
+
+for s in sensors:
+    print("Current sensor:")
+    print(s)
+    s.get_detectable_points()
 max_sensor_range = reduce(lambda s, t: s if s.sensor_range > t.sensor_range else t, sensors).sensor_range
 
 # In the row row_to_search, figure out which positions are covered by sensors' detection range.
 # Two possible approaches:
-# 1. For each sensor, define a set of all positions that are within range (<= Manhattan distance to beacon).
-#    Intersect all those sets, along with a set of the positions in row_to_search.
-#    From those points, remove those that are occupied by a sensor or a beacon.
-# 2. For each position in row_to_search, only include those that fall within a sensor's range.
+# 1. For each position in row_to_search, only include those that fall within a sensor's range.
 #    Run the previous instruction for each sensor.
+#    From those points, remove those that are occupied by a sensor or a beacon.
+# 2. For each sensor, define a set of all positions that are within range (<= Manhattan distance to beacon).
+#    Intersect all those sets, along with a set of the positions in row_to_search.
 #    From those points, remove those that are occupied by a sensor or a beacon.
 # print(f"row_to_search: {row_to_search}")
 # print(f"min_x: {min_x}")
 # print(f"max_x: {max_x}")
+# Approach 1.
 positions = set()
-for x in range(min_x - max_sensor_range, max_x + max_sensor_range + 1):
-    p = Point2D(x, row_to_search)
-    for s in sensors:
-        if s.is_in_range(p):
-            positions.add(p)
-            # break   # No need to consider any more sensors.
+# for x in range(min_x - max_sensor_range, max_x + max_sensor_range + 1):
+#     p = Point2D(x, row_to_search)
+#     for s in sensors:
+#         if s.is_in_range(p):
+#             positions.add(p)
+#             # break   # No need to consider any more sensors.
+
+# Approach 2.
+
 
 # positions -= {s.location for s in sensors}          # Remove any positions occupied by a sensor.
 positions -= {s.closest_beacon for s in sensors}    # Remove any positions occupied by a beacon.
