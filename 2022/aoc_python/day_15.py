@@ -3,7 +3,7 @@ import re, sys
 from functools import reduce
 
 from lib import io
-from lib.geometry import Point2D
+from lib.geometry import Circle, Point2D
 
 class Sensor:
     def __init__(self, location, closest_beacon):
@@ -37,25 +37,25 @@ Closest beacon: {self.closest_beacon} ({self.sensor_range} units away)
         detectable_points = set()
         # Sensor area consists of two triangles with their bases touching.
         # Go from base to tip in each loop.
-        print("Making top half of range.")
-        print(f"self.sensor_range - 1: {self.sensor_range - 1}")
-        print(f"self.location.y - self.sensor_range - 1: {self.location.y - self.sensor_range - 1}")
+        # print("Making top half of range.")
+        # print(f"self.sensor_range - 1: {self.sensor_range - 1}")
+        # print(f"self.location.y - self.sensor_range - 1: {self.location.y - self.sensor_range - 1}")
         row = self.sensor_range - 1
         while row < self.location.y - self.sensor_range - 1:
             col = self.location.x - self.sensor_range - row
             while col < self.location.x + self.sensor_range + row + 1:
-                print(f"({row}, {col})")
+                # print(f"({row}, {col})")
                 detectable_points.add(Point2D(row, col))
                 col += 1
             row += 1
-        print("Making dividing line of range.")
+        # print("Making dividing line of range.")
         row = self.location.x - self.sensor_range
         while row < self.location.x + self.sensor_range + 1:
             # print(f"({row}, {self.location.y})")
             # Construct dividing line of range.
             detectable_points.add(Point2D(row, self.location.y))
             row += 1
-        print("Making bottom half of range.")
+        # print("Making bottom half of range.")
         # print(f"self.sensor_range + 1: {self.sensor_range + 1}")
         # print(f"self.location.y + self.sensor_range + 1: {self.location.y + self.sensor_range + 1}")
         row = self.sensor_range + 1
@@ -110,10 +110,10 @@ for line in beacon_sensor_data:
         )
     )
 
-for s in sensors:
-    print("\nCurrent sensor:")
-    print(s)
-    s.get_detectable_points()
+# for s in sensors:
+#     print("\nCurrent sensor:")
+#     print(s)
+#     s.get_detectable_points()
 max_sensor_range = reduce(lambda s, t: s if s.sensor_range > t.sensor_range else t, sensors).sensor_range
 
 # In the row row_to_search, figure out which positions are covered by sensors' detection range.
@@ -148,3 +148,19 @@ print(f"Number of positions not occupied by a beacon at y = {row_to_search}: {le
 print("======")
 # Attempt 1: 5567803 (too low; 36.8 s)
 # Attempt 2: 6275922
+
+sensor_circles = []
+for s in sensors:
+    sensor_circles.append(Circle(centre=s.location, radius=s.sensor_range))
+
+for sc in sensor_circles:
+    print(sc)
+
+distress_beacon_x = 0
+distress_beacon_y = 0
+
+tuning_frequency = distress_beacon_x * 4000000 + distress_beacon_y
+print("PART 2")
+print("======")
+print(f"Tuning frequency of beacon at ({distress_beacon_x}, {distress_beacon_y}): {tuning_frequency}")
+print("======")
