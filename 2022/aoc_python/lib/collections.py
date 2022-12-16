@@ -3,6 +3,7 @@ import sys
 from abc import abstractclassmethod
 from collections import deque
 from enum import Enum
+from queue import PriorityQueue
 
 
 class Vertex:
@@ -265,3 +266,36 @@ class DirectedWeightedGraph(Graph):
         else:
             self.edge_weights[(source.label, target.label)] = weight
             return True
+
+    def initialise_single_source(self, source):
+        """Call before running shortest-path algorithms."""
+        for v in self.vertices:
+            v.distance = sys.maxsize    # Stand-in for infinity.
+            v.predecessor = None
+        source.distance = 0
+
+    def relax(self, source, target):
+        """Updates target.distance with the shortest path distance to target.
+
+        Also sets source as target's predecessor if target.distance is updated.
+        """
+        if target.distance > source.distance + self.edge_weights[(source.label, target.label)]:
+            target.distance = source.distance + self.edge_weights[(source.label, target.label)]
+            target.predecessor = source
+
+    def dijkstra(self, source):
+        """Run's Dijkstra's algorithm for the single-source shortest-path problem."""
+        self.initialise_single_source(source)
+        final_vertices = set()  # Vertices whose final shortest-path weights from source are determined.
+        vertices_to_process = PriorityQueue()
+        for v in self.vertices:
+            vertices_to_process.put((v.distance, v), block=False)    # Use distance value as priority.
+
+        while not vertices_to_process.empty():
+            u = vertices_to_process.get(block=False)[1] # Throw away priority value.
+            # print(f"u: {u}")
+            final_vertices.add(u)
+            for v in self.neighbours(u):
+                # print(f"v: {v}")
+                self.relax(u, v)
+            # print()
