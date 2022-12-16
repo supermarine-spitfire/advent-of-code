@@ -49,12 +49,55 @@ class LineSegment2D:
     def __str__(self):
         return f"Line2D(start: {self.start}, end: {self.end})"
 
-    def intersects(self, p):
-        # Assumes only horizontal and vertical line segments.
-        if p.x == self.start.x and p.y >= self.start.y and p.y <= self.end.y:   # Vertical case.
+    def intersects_point(self, p):
+        # Determines if a point lies on the line segment.
+        min_x = min(self.start.x, self.end.x)
+        max_x = max(self.start.x, self.end.x)
+        min_y = min(self.start.y, self.end.y)
+        max_y = max(self.start.y, self.end.y)
+
+        return p.x >= min_x and p.x <= max_x and p.y >= min_y and p.y <= max_y
+
+    def intersects_line_segment(self, ls):
+        # Uses https://algotree.org/algorithms/computational_geometry/line_segment_intersection/
+        def get_orientation(p, q, r):
+            # Determine orientation of the line segments pq and qr.
+            m_delta = ( q.y - p.y ) * ( r.x - q.x ) - \
+            ( q.x - p.x ) * ( r.y - q.y )
+
+            if m_delta > 0:
+                # Clockwise: points are ordered clockwise; line segments are in the order pq, qr, rp.
+                return 1
+            elif m_delta < 0:
+                # Anticlockwise: points are ordered anticlockwise; line segments are in the order pr, rq, qp.
+                return -1
+            else:
+                # Parallel or collinear.
+                return 0
+
+        o1 = get_orientation(self.start, self.end, ls.start)
+        o2 = get_orientation(self.start, self.end, ls.end)
+        o3 = get_orientation(ls.start, ls.end, self.start)
+        o4 = get_orientation(ls.start, ls.end, self.end)
+
+        # Check if points are not collinear.
+        # self ( p1, q1 ) and ls ( p2, q2 ) intersect
+        # if points ( p1, q1, p2 ) and points ( p1, q1, q2 ) have different orientations;
+        # and
+        # if points ( p2, q2, p1 ) and points ( p2, q2, q1 ) have different orientations.
+        if o1 != o2 and o3 != o4:
             return True
-        elif p.y == self.start.y and p.x >= self.start.x and p.x <= self.end.x: # Horizontal case.
-            return True
+
+        # Check if points are collinear.
+        if o1 == 0:     # ls.start is collinear with self. Check if it is in self.
+            return self.intersects_point(ls.start)
+        elif o2 == 0:   # ls.end is collinear with self. Check if it is in self.
+            return self.intersects_point(ls.end)
+        elif o3 == 0:   # self.start is collinear with ls. Check if it is in ls.
+            return ls.intersects_point(self.start)
+        elif o4 == 0:   # self.end is collinear with ls. Check if it is in ls.
+            return ls.intersects_point(self.end)
+
         return False
 
     __repr__ = __str__
