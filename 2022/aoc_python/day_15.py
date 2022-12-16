@@ -3,7 +3,7 @@ import re, sys
 from functools import reduce
 
 from lib import io
-from lib.geometry import Circle, Point2D
+from lib.geometry import Point2D, LineSegment2D
 
 class Sensor:
     def __init__(self, location, closest_beacon):
@@ -149,12 +149,30 @@ print("======")
 # Attempt 1: 5567803 (too low; 36.8 s)
 # Attempt 2: 6275922
 
-sensor_circles = []
+# To capture the point at which the distress beacon is located, use the following insight:
+# The beacon can be found by considering the minimum distance from each sensor at which a
+# beacon can be overlooked. This distance is one unit greater than the saved Manhattan distance
+# to the closest discovered beacon to the sensor.
+# Algorithm is as follows:
+# Expand each sensor's range by 1. Construct the boundaries of this region.
+# Identify the intersection point of four of these ranges.
+# This point is the location of the distress beacon.
+sensor_borders = {} # Model each sensor's range as a square.
 for s in sensors:
-    sensor_circles.append(Circle(centre=s.location, radius=s.sensor_range))
+    # Construct the corners of the square.
+    min_undetected_distance = s.sensor_range + 1
 
-for sc in sensor_circles:
-    print(sc)
+    top = Point2D(s.location.x, s.location.y - min_undetected_distance)
+    bottom = Point2D(s.location.x, s.location.y + min_undetected_distance)
+    left = Point2D(s.location.x - min_undetected_distance, s.location.y)
+    right = Point2D(s.location.x + min_undetected_distance, s.location.y)
+
+    # Construct square sides.
+    sides = [LineSegment2D(top, right), LineSegment2D(right, bottom), LineSegment2D(bottom, left), LineSegment2D(left, top)]
+    sensor_borders[s] = sides
+
+print(f"sensor_borders: {sensor_borders}")
+# Go through each of the borders, identifying 
 
 distress_beacon_x = 0
 distress_beacon_y = 0
