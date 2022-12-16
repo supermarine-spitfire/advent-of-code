@@ -205,3 +205,63 @@ class DirectedGraph(Graph):
             return []
         else:
             return self.get_path(source, target.predecessor, list_of_edges.append(target))
+
+
+class DirectedWeightedGraph(Graph):
+    def __init__(self):
+        self.edge_weights = {}
+        super().__init__()
+
+    def __str__(self) -> str:
+        s = super().__str__() + "Edge weights:\n"
+        for edge, weight in self.edge_weights.items():
+            s += f"{edge}: {weight}\n"
+        return s
+
+    def add_vertex(self, v):
+        # Returns the original vertex or a reference to a copy of it already in the graph, if present.
+        if v not in self.vertices:
+            self.adjacency_lists[v] = set()
+            self.vertices.append(v)
+            return v
+        else:
+            return self.vertices[self.vertices.index(v)]
+
+    def remove_vertex(self, v):
+        # Returns boolean flag indicating if operation succeeded or not.
+        if v in self.vertices:
+            del self.adjacency_lists[v]
+            self.vertices.remove(v)
+            return v
+        else:
+            return False
+
+    def add_edge(self, source, target, weight):
+        # Returns boolean flag indicating if operation succeeded or not.
+        if source not in self.vertices or target not in self.vertices:
+            return False
+        elif source in self.adjacency_lists.keys():
+            self.adjacency_lists[source].add(target)
+            self.edge_weights[(source.label, target.label)] = weight
+            return True
+        else:
+            self.adjacency_lists[source] = set().add(target)
+            self.edge_weights[(source.label, target.label)] = weight
+            return True
+
+    def remove_edge(self, source, target):
+        # Returns boolean flag indicating if operation succeeded or not.
+        if source in self.adjacency_lists.keys():
+            self.adjacency_lists[source].remove(target)
+            del self.edge_weights[(source.label, target.label)]
+            return True
+        else:
+            return False
+
+    def update_edge(self, source, target, weight):
+        # Returns boolean flag indicating if operation succeeded or not.
+        if source not in self.vertices or target not in self.vertices:
+            return False
+        else:
+            self.edge_weights[(source.label, target.label)] = weight
+            return True
