@@ -1,6 +1,7 @@
 import re, sys
 
 from functools import reduce
+from itertools import combinations
 
 from lib import io
 from lib.geometry import Point2D, LineSegment2D
@@ -171,8 +172,27 @@ for s in sensors:
     sides = [LineSegment2D(top, right), LineSegment2D(right, bottom), LineSegment2D(bottom, left), LineSegment2D(left, top)]
     sensor_borders[s] = sides
 
-print(f"sensor_borders: {sensor_borders}")
-# Go through each of the borders, identifying 
+# print(f"sensor_borders: {sensor_borders}")
+# Go through sensor_borders in groups of size 4.
+# In each group, check if there are four sides that intersect, one from each sensor border region.
+groups_of_4 = list(combinations(sensors, 4))
+print(f"groups_of_4 ({len(groups_of_4)}):")
+intersecting_sides = None
+for g in groups_of_4:
+    # print(g)
+    sides = sensor_borders[g[0]] + sensor_borders[g[1]] + sensor_borders[g[2]] + sensor_borders[g[3]]
+    print(f"sides: {sides}")
+    side_groups = list(combinations(sides, 4))
+    for side_group in side_groups:
+        s1 = side_group[0]
+        s2 = side_group[1]
+        s3 = side_group[2]
+        s4 = side_group[3]
+        if s1.intersects_line_segment(s2) and s2.intersects_line_segment(s3) and s3.intersects_line_segment(s4) and s4.intersects_line_segment(s1):
+            intersecting_sides = side_group
+            break
+
+print(f"intersecting_sides: {intersecting_sides}")
 
 distress_beacon_x = 0
 distress_beacon_y = 0
