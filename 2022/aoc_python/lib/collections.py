@@ -109,6 +109,10 @@ class Graph:
             v.distance = None
             v.predecessor = None
 
+    def clear(self):
+        self.adjacency_lists = {}
+        self.vertices = []
+
     def bfs(self, source):
         # Implements breadth-first search.
         # print("In Graph.bfs().")
@@ -273,6 +277,10 @@ class DirectedWeightedGraph(Graph):
             return None
         else:
             return self.edge_weights[(source.label, target.label)]
+
+    def clear(self):
+        self.edge_weights = {}
+        super().clear()
 
     def initialise_single_source(self, source):
         """Call before running shortest-path algorithms."""
