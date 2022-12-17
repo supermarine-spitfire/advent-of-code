@@ -252,9 +252,10 @@ class DirectedWeightedGraph(Graph):
 
     def remove_edge(self, source, target):
         # Returns boolean flag indicating if operation succeeded or not.
-        if source in self.adjacency_lists.keys():
+        if source in self.adjacency_lists.keys() and target in self.adjacency_lists[source]:
             self.adjacency_lists[source].remove(target)
-            del self.edge_weights[(source.label, target.label)]
+            if (source.label, target.label) in self.edge_weights.keys():
+                del self.edge_weights[(source.label, target.label)]
             return True
         else:
             return False
@@ -266,6 +267,12 @@ class DirectedWeightedGraph(Graph):
         else:
             self.edge_weights[(source.label, target.label)] = weight
             return True
+
+    def get_edge_weight(self, source, target):
+        if source not in self.vertices or target not in self.vertices:
+            return None
+        else:
+            return self.edge_weights[(source.label, target.label)]
 
     def initialise_single_source(self, source):
         """Call before running shortest-path algorithms."""
